@@ -1,5 +1,5 @@
 
-call plug#begin('~/.local/share/nvim/plugged')
+call plug#begin('$XDG_DATA_HOME/nvim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
@@ -17,6 +17,7 @@ let g:coc_global_extensions = [
   \ 'coc-omnisharp',
   \ 'coc-explorer',
   \ ]
+
 
 " coc tab completion
 inoremap <silent><expr> <TAB>
