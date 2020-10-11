@@ -22,12 +22,9 @@ foreground = ${colors.foreground}
 
 ; Fonts
 
-; Googles Roboto Font
-font-0 = "Roboto:size=10;1"
-; Mono font primarly used for time
-font-1 = "Roboto Mono:size=10;1"
+font-0 = "sans serif:size=10;1"
 ; Material icons from materialdesignicons.com
-font-2 = "MaterialDesignIcons:size=10;1"
+font-1 = "MaterialDesignIcons:size=10;1"
 
 ; Lines
 line-size = 3
@@ -70,8 +67,6 @@ date = "%Y-%m-%d"
 ; Calendar icon
 format-prefix = "󰃭 "
 
-; Mono font
-label-font = 1
 label = %date%
 
 ; Clock module
@@ -82,9 +77,6 @@ time = %H:%M
 
 ; Clock icon
 format-prefix = "󰅐 "
-
-; Mono font
-label-font = 1
 label = %time%
 
 [module/protonvpn]
