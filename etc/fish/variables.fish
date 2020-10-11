@@ -1,3 +1,5 @@
+set -gx TERM "alacritty"
+
 set -gx EDITOR "nvim"
 
 set -gx PATH $PATH "$HOME/bin"
