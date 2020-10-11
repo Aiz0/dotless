@@ -2,4 +2,4 @@ set -gx EDITOR "nvim"
 
 set -gx PATH $PATH "$HOME/bin"
 
- set -gx DOTBARE_DIR "$HOME/usr/config"
+ set -gx DOTBARE_DIR "$XDG_STATE_HOME/dotbare"
