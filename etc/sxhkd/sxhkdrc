@@ -1,0 +1,165 @@
+#
+# WM independant hotkeys
+#
+
+# Terminal emulator
+super + Return
+	alacritty
+
+# Program launcher
+super + @space
+	rofi -show drun
+
+# Reload sxhkd config
+super + Escape
+	pkill -USR1 -x sxhkd;\
+	dunstify "sxhkd" "Reloaded configuration"
+
+super + slash
+	sxhkd-help.sh
+
+# Lock screen
+super + l
+	xsecurelock
+
+# Screenshot
+super + {_,shift +}{v,c,x}
+	;maim {-u, ""} {-q, -st 9999999,-s} /tmp/screenshot.png; \
+	screenshot-directory.sh /tmp/screenshot.png ; \
+	dunstify -a screenshot "Cheese!" "Screenshot saved."
+
+#
+# Audio
+#
+
+# Volume
+XF86Audio{Raise,Lower}Volume
+	amixer -q set Master 1%{+,-} unmute ;\
+	notify-volume.sh
+
+
+# Mute
+XF86AudioMute
+	amixer -q set Master toggle
+
+# Play / Pause Track
+XF86AudioPlay
+	playerctl play-pause -p spotify\
+	&& playerctl-notifications.sh
+
+# Track Selection
+XF86Audio{Prev,Next}
+	;playerctl {previous, next} -p spotify ;\
+	sleep 0.15;\
+	playerctl-notifications.sh
+
+# Get focused window class name via dunst notification
+super + alt + t
+	dunstify "Focused Window" "Name: "$(xprop -id $(bspc query -N -n) | grep -m 1 "WM_CLASS" | sed -n 's/\(WM_CLASS.*\)"\(.*\)"$/\2 /p')
+# I could not get this to work with gawk when running it via sxhkd. Works fine elsewhere.
+# But atleast I don't get quotation marks when using sed
+#    dunstify "Focused Window" "Name: "$(xprop -id $(bspc query -N -n) | gawk '/WM_CLASS/ {print $4}')
+
+
+#
+# bspwm hotkeys
+#
+
+# Quit/Restart bspwm
+super + alt + {q,r}
+	bspc {quit,wm -r}
+
+# Close and kill a window
+super + {_,shift + } w
+	bspc node -{c,k}
+
+# Alternate between the tiled and monocle layout
+super + m
+	bspc desktop -l next
+
+# Send the newest marked node to the newest preselected node
+super + y
+	bspc node newest.marked.local -n newest.!automatic.local
+
+# Swap the current node and the biggest node
+super + g
+	bspc node -s biggest
+
+#
+# state/flags
+#
+
+# Set the window state
+super + {t,shift + t,s,f}
+	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+# Set the node flags
+super + ctrl + {m,x,y,z}
+	bspc node -g {marked,locked,sticky,private}
+
+#
+# Focus/Swap
+#
+
+# Focus the node in the given direction
+# I am using a colemak layout so hnei is hjkl
+super + {_,shift +}{h,n,e,i}
+	bspc node -{f,s} {west,south,north,east}
+
+# Focus the node for the given path jump
+super + {p,b,comma,period}
+	bspc node -f @{parent,brother,first,second}
+
+# focus the next/prvious desktop in the current monitor
+super + bracket{left,right}
+	bspc desktop -f {prev,next}.local
+
+# Focus the last node/desktop
+super + {grave,Tab}
+	bspc {node,desktop} -f last
+
+# Focus the older or newer node in the focus history
+super + {o,apostrophe}
+	bspc wm -h off; \
+	bspc node {older,newer} -f; \
+	bspc wm -h on;
+
+# Focus or send to the given desktop
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f, node -d} '^{1-9,10}'
+
+#
+# Preselect
+#
+
+# Preselect the direction
+super + ctrl + {h,n,e,i}
+	bspc node -p {west,south,north,east}
+
+# Preselect the ratio
+super + ctrl + {1-9}
+	bspc node -0.{1-9}
+
+# Cancel the preselection for the focused node
+super + ctrl + shift + space
+	bspc node -p cancel
+
+# Cancel the preseletion for the focused desktop
+super + ctrl + shift + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+#
+# Move / Resize
+#
+
+# Expand a window by moving one of its side outward
+super + alt + {h,n,e,i}
+	bspc node -z {left -20 0, bottom 0 20, top 0 -20, right 20 0}
+
+# Contract a window by moving one of its side inward
+super + alt + shift + {h,n,e,i}
+	bspc node -z {right -20 0, top 0 20, bottom 0 -20, left 20 0}
+
+# move a floating window
+super + {Left,Down,Up,Right}
+	bspc node -v {-20 0,0 20,0 -20,20 0}

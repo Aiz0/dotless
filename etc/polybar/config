@@ -1,0 +1,104 @@
+[colors]
+; Use colors from Xresources
+background =      ${xrdb:color0:#222}
+foreground =      ${xrdb:color7:#222}
+foreground-alt =  ${xrdb:color7:#222}
+primary =         ${xrdb:color1:#222}
+secondary =       ${xrdb:color2:#222}
+alert =           ${xrdb:color3:#222}
+
+; Bar used for bspwm
+[bar/bspwmbar]
+monitor = ${env:MONITOR:HDMI-A-1}
+enable-ipc=true
+
+width = 100%
+height = 20
+
+wm-restack = bspwm
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+; Fonts
+
+; Googles Roboto Font
+font-0 = "Roboto:size=10;1"
+; Mono font primarly used for time
+font-1 = "Roboto Mono:size=10;1"
+; Material icons from materialdesignicons.com
+font-2 = "MaterialDesignIcons:size=10;1"
+
+; Lines
+line-size = 3
+line-color = #ff0000
+
+; Padding and margin
+module-margin = 2
+padding = 2
+
+; Modules
+modules-left = bspwm
+modules-right = updates protonvpn date clock
+
+; bspwm module
+[module/bspwm]
+type = internal/bspwm
+
+label-focused = %index%
+label-focused-underline = ${colors.foreground}
+
+label-focused-padding = 2
+
+label-occupied = %index%
+label-occupied-padding = 2
+
+label-urgent = %index%
+label-urgent-background = ${colors.alert}
+label-urgent-padding = 2
+
+; left empty to hide unused desktops
+label-empty =
+
+; Date module
+[module/date]
+type = internal/date
+interval = 10
+
+date = "%Y-%m-%d"
+
+; Calendar icon
+format-prefix = "󰃭 "
+
+; Mono font
+label-font = 1
+label = %date%
+
+; Clock module
+[module/clock]
+type = internal/date
+interval = 5
+time = %H:%M
+
+; Clock icon
+format-prefix = "󰅐 "
+
+; Mono font
+label-font = 1
+label = %time%
+
+[module/protonvpn]
+type = custom/script
+exec = $XDG_CONFIG_HOME/polybar/polybar-scripts/protonvpn.sh
+interval = 5
+
+[module/updates]
+type = custom/script
+exec = $XDG_CONFIG_HOME/polybar/polybar-scripts/updates-pacman-aurhelper.sh
+interval = 60
+
+; Sync icon
+format-prefix = "󰓦 "
+
+[settings]
+screenchange-relaod = true

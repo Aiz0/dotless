@@ -1,0 +1,37 @@
+#!/bin/sh
+
+xrdb -merge $XDG_CONFIG_HOME/sx/Xresources
+
+# Start dbus
+dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
+
+# Set default cursor to left pointer instead of X
+xsetroot -cursor_name left_ptr
+
+xset r rate 275 40
+
+# Import Display so dunst can start correctly
+systemctl --user import-environment DISPLAY
+
+# Set last used background
+#wal -R
+nitrogen --restore
+
+# Start compositor
+picom -b
+
+# Start udiskie to automount USB storage devices
+udiskie &
+
+# Torrent
+qbittorrent-nox -d
+
+# Start flexget daemon
+flexget daemon start -d
+
+#
+#Start window manager
+#
+# Set shell for bspwm and sxhkd to bash
+export SXHKD_SHELL='/usr/bin/sh'
+exec bspwm
