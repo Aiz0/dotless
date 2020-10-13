@@ -18,3 +18,6 @@ abbr gm  'git merge'
 abbr gp  'git push'
 abbr gpl 'git pull'
 abbr gs  'git status'
+
+# dotbare
+abbr db 'dotbare'
