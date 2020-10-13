@@ -1,1 +1,0 @@
-/home/aiz/etc/fish/functions/theme-pure/conf.d/pure.fish
