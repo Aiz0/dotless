@@ -3,7 +3,7 @@ set number relativenumber
 set cursorline
 set encoding=utf-8
 set hidden
-set tabstop=4 shiftwidth=4 softtabstop=4 noexpandtab smarttab autoindent
+set tabstop=4 shiftwidth=4 softtabstop=4 expandtab smarttab autoindent
 set list
 set scrolloff=4
 set ttimeoutlen=0 notimeout
