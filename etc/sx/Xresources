@@ -1,13 +1,13 @@
-#include	"Xresources.d/blossom"
+#include	"colorscheme/blossom"
 
-Xcursor.theme:			posy-black
+Xcursor.theme:          posy-black
 
 ! urxvt configuration
-URxvt.scrollBar:		false
-URxvt.cursorBlink:		true
-URxvt*dynamicColors:	true
-URxvt.internalBorder:	20
+URxvt.scrollBar:        false
+URxvt.cursorBlink:      true
+URxvt*dynamicColors:    true
+URxvt.internalBorder:   20
 
-URxvt.font:				xft:Source Code Pro:Regular:size=11:antialias=true,\
-						xft:Symbola:Regular:size=8
-URxvt.letterSpace:		-1
+URxvt.font:             xft:Source Code Pro:Regular:size=11:antialias=true,\
+                        xft:Symbola:Regular:size=8
+URxvt.letterSpace:      -1
