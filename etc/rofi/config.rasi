@@ -1,10 +1,10 @@
 configuration {
-	lines: 5;
+    lines: 5;
     font: "Roboto mono 12";
-	show-icons: true;
-	icon-theme: "Papirus";
-	sort: true;
-	sorting-method: "fzf" ;
-	scroll-method: 1;
-	theme: "themes/launcher/slate";
+    show-icons: true;
+    icon-theme: "Papirus";
+    sort: true;
+    sorting-method: "fzf" ;
+    scroll-method: 1;
+    theme: "themes/launcher/slate";
 }

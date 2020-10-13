@@ -3,49 +3,49 @@
 @import "../colors.rasi"
 
 * {
-	selected-background: @accent;
-	selected-foreground: @foreground;
+    selected-background: @accent;
+    selected-foreground: @foreground;
 
-	background-color: @background;
-	text-color: @foreground;
-	font: "Material Design Icons 48";
+    background-color: @background;
+    text-color: @foreground;
+    font: "Material Design Icons 48";
 }
 
 #window {
-	anchor: center;
-	location: center;
+    anchor: center;
+    location: center;
 
-	width: 56%;
-	height: 33%;
-	padding: 5px;
+    width: 56%;
+    height: 33%;
+    padding: 5px;
 }
 
 #mainbox {
-	children: [listview];
-	background-color: @background;
-	border: 0;
-	padding: 0;
+    children: [listview];
+    background-color: @background;
+    border: 0;
+    padding: 0;
 }
 
 #listview {
-	layout:horizontal;
-	backgrund-color: transparent;
-	lines:5;
+    layout:horizontal;
+    backgrund-color: transparent;
+    lines:5;
 }
 
 element {
-	margin: 8px;
-	padding: 8px;
-	border-radius: 2px;
-	background-color: @background-light;
+    margin: 8px;
+    padding: 8px;
+    border-radius: 2px;
+    background-color: @background-light;
 }
 
 element-text {
-	horizontal-align: 0.5;
-	vertical-align: 0.5;
+    horizontal-align: 0.5;
+    vertical-align: 0.5;
 }
 
 element.selected {
-	background-color: @accent;
-	text-color: @background;
+    background-color: @accent;
+    text-color: @background;
 }

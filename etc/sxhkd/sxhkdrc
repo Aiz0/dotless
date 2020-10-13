@@ -4,29 +4,29 @@
 
 # Terminal emulator
 super + Return
-	$TERM
+    $TERM
 
 # Program launcher
 super + @space
-	rofi -show drun
+    rofi -show drun
 
 # Reload sxhkd config
 super + alt + Escape
-	pkill -USR1 -x sxhkd;\
-	dunstify "sxhkd" "Reloaded configuration"
+    pkill -USR1 -x sxhkd;\
+    dunstify "sxhkd" "Reloaded configuration"
 
 super + slash
-	sxhkd-help.sh
+    sxhkd-help.sh
 
 # Lock screen
 super + l
-	xsecurelock
+    xsecurelock
 
 # Screenshot
 super + {_,shift +}{v,c,x}
-	;if pgrep -x maim > /dev/null; then maim {-u, ""} {-q, -st 9999999,-s} /tmp/screenshot.png; fi; \
-	screenshot-directory.sh /tmp/screenshot.png ; \
-	dunstify -a screenshot "Cheese!" "Screenshot saved."
+    ;if pgrep -x maim > /dev/null; then maim {-u, ""} {-q, -st 9999999,-s} /tmp/screenshot.png; fi; \
+    screenshot-directory.sh /tmp/screenshot.png ; \
+    dunstify -a screenshot "Cheese!" "Screenshot saved."
 
 #
 # Audio
@@ -34,28 +34,28 @@ super + {_,shift +}{v,c,x}
 
 # Volume
 XF86Audio{Raise,Lower}Volume
-	amixer -q set Master 1%{+,-} unmute ;\
-	notify-volume.sh
+    amixer -q set Master 1%{+,-} unmute ;\
+    notify-volume.sh
 
 
 # Mute
 XF86AudioMute
-	amixer -q set Master toggle
+    amixer -q set Master toggle
 
 # Play / Pause Track
 XF86AudioPlay
-	playerctl play-pause -p spotify;\
-	playerctl-notifications.sh
+    playerctl play-pause -p spotify;\
+    playerctl-notifications.sh
 
 # Track Selection
 XF86Audio{Prev,Next}
-	;playerctl {previous, next} -p spotify ;\
-	sleep 0.15;\
-	playerctl-notifications.sh
+    ;playerctl {previous, next} -p spotify ;\
+    sleep 0.15;\
+    playerctl-notifications.sh
 
 # Get focused window class name via dunst notification
 #super + alt + t
-#	dunstify "Focused Window" "Name: "$(xprop -id $(bspc query -N -n) | grep -m 1 "WM_CLASS" | sed -n 's/\(WM_CLASS.*\)"\(.*\)"$/\2 /p')
+#   dunstify "Focused Window" "Name: "$(xprop -id $(bspc query -N -n) | grep -m 1 "WM_CLASS" | sed -n 's/\(WM_CLASS.*\)"\(.*\)"$/\2 /p')
 # I could not get this to work with gawk when running it via sxhkd. Works fine elsewhere.
 # But atleast I don't get quotation marks when using sed
 #    dunstify "Focused Window" "Name: "$(xprop -id $(bspc query -N -n) | gawk '/WM_CLASS/ {print $4}')
@@ -67,19 +67,19 @@ XF86Audio{Prev,Next}
 
 # Quit/Restart bspwm
 super + alt + {q,r}
-	bspc {quit,wm -r}
+    bspc {quit,wm -r}
 
 # Close and kill a window
 super + {_,shift + } w
-	bspc node -{c,k}
+    bspc node -{c,k}
 
 # Alternate between the tiled and monocle layout
 super + m
-	bspc desktop -l next
+    bspc desktop -l next
 
 # Send the newest marked node to the newest preselected node
 #super + y
-#	bspc node newest.marked.local -n newest.!automatic.local
+#   bspc node newest.marked.local -n newest.!automatic.local
 
 #
 # state/flags
@@ -87,11 +87,11 @@ super + m
 
 # Set the window state
 super + {p,shift + p ,shift + f,f}
-	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+    bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
 
 # Set the node flags
 #super + ctrl + {m,x,y,z}
-#	bspc node -g {marked,locked,sticky,private}
+#   bspc node -g {marked,locked,sticky,private}
 
 #
 # Focus/Swap
@@ -99,29 +99,29 @@ super + {p,shift + p ,shift + f,f}
 
 # Focus the node in the given direction
 super + {_,shift +}{h,n,e,i}
-	bspc node -{f,s} {west,south,north,east}
+    bspc node -{f,s} {west,south,north,east}
 
 # Focus the node for the given path jump
 #super + {p,b,comma,period}
-#	bspc node -f @{parent,brother,first,second}
+#   bspc node -f @{parent,brother,first,second}
 
 # focus the next/prvious desktop in the current monitor
 #super + bracket{left,right}
-#	bspc desktop -f {prev,next}.local
+#   bspc desktop -f {prev,next}.local
 
 # Focus the last node/desktop
 #super + {grave,Tab}
-#	bspc {node,desktop} -f last
+#   bspc {node,desktop} -f last
 
 # Focus the older or newer node in the focus history
 #super + {o,apostrophe}
-#	bspc wm -h off; \
-#	bspc node {older,newer} -f; \
-#	bspc wm -h on;
+#   bspc wm -h off; \
+#   bspc node {older,newer} -f; \
+#   bspc wm -h on;
 
 # Focus or send to the given desktop
 super + {_,shift + }{1-9,0}
-	bspc {desktop -f, node -d} '^{1-9,10}'
+    bspc {desktop -f, node -d} '^{1-9,10}'
 
 #
 # Preselect
@@ -129,37 +129,37 @@ super + {_,shift + }{1-9,0}
 
 # Preselect the direction
 super + shift + {r,s,t,d}
-	bspc node -p {west,south,north,east}
+    bspc node -p {west,south,north,east}
 
 # Preselect the ratio
 #super + ctrl + {1-9}
-#	bspc node -0.{1-9}
+#   bspc node -0.{1-9}
 
 # Cancel the preselection for the focused node
 #super + ctrl + shift + space
-#	bspc node -p cancel
+#   bspc node -p cancel
 
 # Cancel the preseletion for the focused desktop
 super + Escape
-	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+    bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
 #
 # Move / Resize
 #
 
 super + {r,s,t,d}
-	n=10; \
-	{ d1=left;   d2=right;  dx=-$n; dy=0;   \
-	, d1=bottom; d2=top;    dx=0;   dy=$n;  \
-	, d1=top;    d2=bottom; dx=0;   dy=-$n; \
-	, d1=right;  d2=left;   dx=$n;  dy=0;   \
-	} \
-	bspc node --resize $d1 $dx $dy || bspc node --resize $d2 $dx $dy
+    n=10; \
+    { d1=left;   d2=right;  dx=-$n; dy=0;   \
+    , d1=bottom; d2=top;    dx=0;   dy=$n;  \
+    , d1=top;    d2=bottom; dx=0;   dy=-$n; \
+    , d1=right;  d2=left;   dx=$n;  dy=0;   \
+    } \
+    bspc node --resize $d1 $dx $dy || bspc node --resize $d2 $dx $dy
 
 # Contract a window by moving one of its side inward
 super + alt + {r,s,t,d}
-	bspc node -z {right -20 0, top 0 20, bottom 0 -20, left 20 0}
+    bspc node -z {right -20 0, top 0 20, bottom 0 -20, left 20 0}
 
 # move a floating window
 super + alt + {h,n,e,i}
-	bspc node -v {-20 0,0 20,0 -20,20 0}
+    bspc node -v {-20 0,0 20,0 -20,20 0}
