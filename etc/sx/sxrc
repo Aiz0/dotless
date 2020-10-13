@@ -32,6 +32,4 @@ flexget daemon start -d
 #
 #Start window manager
 #
-# Set shell for bspwm and sxhkd to bash
-export SXHKD_SHELL='/usr/bin/sh'
 exec bspwm
