@@ -8,20 +8,18 @@ set lock 󰌾
 set suspend 󰒲
 set logout 󰍃
 
-
-set options "$shutdown\n$reboot\n$lock\n$suspend\n$logout"
-
-set chosen (echo -e $options | rofi -theme $rofitheme -dmenu -selected-row 2)
-
-switch $chosen
-	case $shutdown
-		echo shutdown
-	case $reboot
-		echo reboot
-	case $lock
-		echo lock
-	case $suspend
-		echo suspend
-	case $logout
-		echo logout
+set options $shutdown $reboot $lock $suspend $logout
+set choice (echo -se $options\n | rofi -theme $rofitheme -dmenu -selected-row 2)
+switch $choice
+    case $shutdown
+        poweroff
+    case $reboot
+        reboot
+    case $lock
+        xsecurelock
+    case $suspend
+        xsecurelock &
+        systemctl suspend
+    case $logout
+        bspc quit
 end
