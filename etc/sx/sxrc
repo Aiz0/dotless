@@ -5,20 +5,25 @@ xrdb -merge $XDG_CONFIG_HOME/sx/Xresources
 # Start dbus
 dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
-# Set default cursor to left pointer instead of X
-xsetroot -cursor_name left_ptr
-
-xset r rate 275 40
-
 # Import Display so dunst can start correctly
 systemctl --user import-environment DISPLAY
 
-# Set last used background
-#wal -R
-nitrogen --restore
+#
+# X things
+#
 
-# Start compositor
-picom -b
+# Set default cursor to left pointer instead of X
+xsetroot -cursor_name left_ptr
+
+# set key repeat rate
+xset r rate 275 40
+
+#
+# background stuff
+#
+
+# Hides mouse when it hasn't been used for a while
+unclutter &
 
 # Start udiskie to automount USB storage devices
 udiskie &
@@ -30,6 +35,16 @@ qbittorrent-nox -d
 flexget daemon start -d
 
 #
-#Start window manager
+# idk style stuff i guess
+#
+
+# Set last used background
+nitrogen --restore
+
+# Start compositor
+picom -b
+
+#
+# window manager
 #
 exec bspwm
