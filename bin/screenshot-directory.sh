@@ -1,5 +1,5 @@
 #!/usr/bin/fish
-set screendir ~/usr/images/Screenshots/Linux
+set screendir ~/usr/images/scr/linux
 set datedir (date "+%Y/%m - %B")
 set imagename (date "+%F_T%T")
 set extension ".png"
