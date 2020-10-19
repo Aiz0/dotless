@@ -163,3 +163,7 @@ super + alt + {r,s,t,d}
 # move a floating window
 super + alt + {h,n,e,i}
     bspc node -v {-20 0,0 20,0 -20,20 0}
+
+# resize gaps
+super + {minus,equal}
+    bspc config window_gap $(expr $(bspc config window_gap) {-,+} 1)
