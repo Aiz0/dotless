@@ -10,6 +10,7 @@ call plug#end()
 let g:coc_global_extensions = [
   \ 'coc-css',
   \ 'coc-html',
+  \ 'coc-rome',
   \ 'coc-json',
   \ 'coc-prettier',
   \ 'coc-tsserver',
