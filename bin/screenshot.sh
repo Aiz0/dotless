@@ -1,33 +1,45 @@
 #!/usr/bin/fish
-# Sceenshoting with maim
-# Compression is done with oxipng
+# sceenshots are done with maim
+# compression / optimizing is done with oxipng
 
 argparse 'u/hidecursor' 's/select' 'w/selectwindow' 'c/compress' -- $argv
 
-
-set screendir ~/usr/images/scr/linux
-set datedir (date "+%Y/%m - %B")
-set imagename (date "+%F_T%T")
-set extension ".png"
-set fullpath $screendir/$datedir/$imagename$extension
-
-set scr_options
+# should cursor be hidden
 if test $_flag_u
-    set scr_options '-u'
+    set scr_options -u
 end
 
+# should an area or window be selected
 if test $_flag_s
     set scr_options $scr_options -s
 else if test $_flag_w
     set scr_options $scr_options -s -t 9999999
 end
 
+# where should image be saved
+set scr_dir ~/usr/images/scr/linux
+set date_dir (date "+%Y/%m - %B")
+
+# what should the image be called
+set image_name (date "+%F_T%T")
+set extension "png"
+
+set fullpath $scr_dir/$date_dir/$image_name.$extension
+
+# make sure maim isn't already running
+# this is so that you don't have to click a million times if you accidentaly spammed this script with -s
 if ! pgrep maim > /dev/null
-    mkdir -p $screendir/$datedir
+    # make sure directory exists so we can actually save the image there
+    mkdir -p $scr_dir/$date_dir
+
+    # screenshot time
     maim -q $scr_options $fullpath
-    if test $_flag_c
+
+    # oxipng can only optimze png images
+    if test $_flag_c; and test "$extension" = "png"
         oxipng -o 3 $fullpath > /dev/null &
     end
+
     dunstify -a screenshot "Cheese!" "screenshot saved"
     wait
 end
