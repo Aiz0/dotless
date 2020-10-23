@@ -24,9 +24,7 @@ super + l
 
 # Screenshot
 super + {_,shift +}{v,c,x}
-    ;if pgrep -x maim > /dev/null; then maim {-u, ""} {-q, -st 9999999,-s} /tmp/screenshot.png; fi; \
-    screenshot-directory.sh /tmp/screenshot.png ; \
-    dunstify -a screenshot "Cheese!" "Screenshot saved."
+    screenshot.sh {--hidecursor, ""} {"", --selectwindow, --select} --compress
 
 #
 # Audio
