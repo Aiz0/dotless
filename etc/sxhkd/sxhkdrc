@@ -64,7 +64,7 @@ XF86Audio{Prev,Next}
 #
 
 # Quit/Restart bspwm
-super + alt + {q,r}
+super + ctrl + {q,r}
     bspc {quit,wm -r}
 
 # Close and kill a window
@@ -145,6 +145,7 @@ super + Escape
 # Move / Resize
 #
 
+#smart resize
 super + {r,s,t,d}
     n=10; \
     { d1=left;   d2=right;  dx=-$n; dy=0;   \
