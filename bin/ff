@@ -1,0 +1,12 @@
+#!/usr/bin/fish
+# Wrapper script for firefox to remove .mozilla and .pki directories from Home
+set MOZDIR $XDG_DATA_HOME/mozilla
+
+# create mozdir if it doesn't exist. Useful on first launch
+if ! test -d $MOZDIR
+    mkdir -p $MOZDIR
+end
+
+# set home and launch firefox
+set HOME $MOZDIR
+exec /usr/bin/firefox $argv
