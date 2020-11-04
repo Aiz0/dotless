@@ -1,0 +1,55 @@
+[global]
+
+    geometry = "350x100-16+36"
+    separator_height = 1
+    padding = 10
+    horizontal_padding = 10
+    separator_color = frame
+    idle_threshold = 60
+
+
+    font = "sans-serif" 12
+
+    markup = full
+    format = "<b>%s</b>\n%b"
+    alignment = center
+    hide_duplicate_count = true
+
+
+    icon_position = left
+    max_icon_size = 64
+
+    # Browser for opening urls in context menu.
+    browser = ff -new-tab
+
+    corner_radius = 2
+
+
+[shortcuts]
+    close = ctrl+space
+    close_all = ctrl+shift+space
+    history = ctrl+grave
+    context = ctrl+shift+period
+
+[urgency_low]
+    timeout = 3
+    background = "#333b47"
+    foreground = "#71c6ff"
+
+[urgency_normal]
+    timeout = 6
+    background = "#333b47"
+    foreground = "#71c6ff"
+
+[urgency_critical]
+    timeout = 0
+    background = "#333b47"
+    foreground = "#71c6ff"
+
+[music]
+    appname = showMusic
+    #new_icon = ~/etc/dunst/icons/
+
+[screenshot]
+    appname = screenshot
+    #new_icon = ~/etc/dunst/icons/
