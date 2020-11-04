@@ -1,6 +1,7 @@
 #!/usr/bin/fish
 # sceenshots are done with maim
 # compression / optimizing is done with oxipng
+# notifications are done with dunstify
 
 argparse 'u/hidecursor' 's/select' 'w/selectwindow' 'c/compress' -- $argv
 
@@ -40,6 +41,6 @@ if ! pgrep maim > /dev/null
         oxipng -o 3 $fullpath > /dev/null &
     end
 
-    dunstify -a screenshot "Cheese!" "screenshot saved"
+    dunstify -r 5557 -a screenshot "Cheese!" "Screenshot saved as\n"$image_name.$extension
     wait
 end
