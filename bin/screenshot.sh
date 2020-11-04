@@ -42,5 +42,4 @@ if ! pgrep maim > /dev/null
     end
 
     dunstify -r 5557 -a screenshot "Cheese!" "Screenshot saved as\n"$image_name.$extension
-    wait
 end
