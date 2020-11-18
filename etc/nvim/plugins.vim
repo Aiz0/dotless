@@ -17,6 +17,7 @@ let g:coc_global_extensions = [
   \ 'coc-java',
   \ 'coc-omnisharp',
   \ 'coc-explorer',
+  \ 'coc-texlab',
   \ ]
 
 
