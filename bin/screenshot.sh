@@ -36,10 +36,12 @@ if ! pgrep maim > /dev/null
     # screenshot time
     maim -q $scr_options $fullpath
 
-    # oxipng can only optimze png images
-    if test $_flag_c; and test "$extension" = "png"
-        oxipng -o 3 $fullpath > /dev/null &
-    end
+    if test -e $fullpath
+        # oxipng can only optimze png images
+        if test $_flag_c; and test "$extension" = "png"
+            oxipng -o 3 $fullpath > /dev/null &
+        end
 
-    dunstify -r 5557 -a screenshot "Cheese!" "Screenshot saved as\n"$image_name.$extension
+        dunstify -r 5557 -a screenshot "Cheese!" "Screenshot saved as\n"$image_name.$extension
+    end
 end
