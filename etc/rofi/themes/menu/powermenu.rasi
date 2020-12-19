@@ -1,51 +1,115 @@
+/*
+ *
+ * Author  : Aditya Shakya
+ * Mail    : adi1090x@gmail.com
+ * Github  : @adi1090x
+ * Twitter : @adi1090x
+ *
+ */
 
-
-@import "../colors.rasi"
-
-* {
-    selected-background: @accent;
-    selected-foreground: @foreground;
-
-    background-color: @background;
-    text-color: @foreground;
-    font: "Material Design Icons 48";
+configuration {
+    font:                           "sans 12";
+    show-icons:                     false;
+    icon-theme:                     "Papirus";
+    drun-display-format:            "{name}";
+    disable-history:                false;
+    fullscreen:                     false;
+    hide-scrollbar:                 true;
+    sidebar-mode:                   false;
 }
 
-#window {
-    anchor: center;
-    location: center;
+@import "colors.rasi"
 
-    width: 56%;
-    height: 33%;
-    padding: 5px;
+window {
+    transparency:                   "real";
+    background-color:               @background;
+    text-color:                     @foreground;
+    height:                         28.5%;
+    width:                          50%;
+    location:                       center;
+    x-offset:                       0;
+    y-offset:                       0;
 }
 
-#mainbox {
-    children: [listview];
-    background-color: @background;
-    border: 0;
-    padding: 0;
+prompt {
+    enabled:                        true;
+    padding:                        0.5% 0.5% 0.5% 0%;
+    background-color:               @background-alt;
+    text-color:                     @foreground;
 }
 
-#listview {
-    layout:horizontal;
-    backgrund-color: transparent;
-    lines:5;
+textbox-prompt-colon {
+    expand:                         false;
+    str:                            "System |";
+    background-color:               @background-alt;
+    text-color:                     @foreground;
+    padding:                        0.5% 0.5% 0.5% 0%;
+}
+
+inputbar {
+    children:                       [ textbox-prompt-colon, prompt ];
+    background-color:               @background-alt;
+    text-color:                     @foreground;
+    expand:                         false;
+    border-radius:                  2px;
+    margin:                         0% 21.3% 0% 0%;
+    padding:                        0.5%;
+    position:                       center;
+}
+
+listview {
+    background-color:               @background;
+    margin:                         0% 0% 0% 0%;
+    spacing:                        2%;
+    cycle:                          true;
+    dynamic:                        true;
+    layout:                         horizontal;
+}
+
+mainbox {
+    background-color:               @background;
+    children:                       [ inputbar, listview ];
+    spacing:                        3.5%;
+    padding:                        4% 0% 0% 2%;
 }
 
 element {
-    margin: 8px;
-    padding: 8px;
-    border-radius: 2px;
-    background-color: @background-light;
+    background-color:               @background-alt;
+    text-color:                     @foreground;
+    orientation:                    horizontal;
 }
 
 element-text {
-    horizontal-align: 0.5;
-    vertical-align: 0.5;
+    font:                           "MaterialDesignIcons 32";
+    expand:                         true;
+    horizontal-align:               0.5;
+    vertical-align:                 0.5;
+    margin:                         4.7% 1.7% 4.7% 1.7%;
 }
 
-element.selected {
-    background-color: @accent;
-    text-color: @background;
+element normal.urgent,
+element alternate.urgent {
+    background-color:               @background;
+    text-color:                     @foreground;
+}
+
+element normal.active,
+element alternate.active {
+    background-color:               @background;
+    text-color:                     @selected;
+}
+
+element selected {
+    background-color:               @background;
+    text-color:                     @selected;
+}
+
+element selected.urgent {
+    background-color:               @urgent;
+    text-color:                     @foreground;
+}
+
+element selected.active {
+    background-color:               @background;
+    color:                          @selected;
 }

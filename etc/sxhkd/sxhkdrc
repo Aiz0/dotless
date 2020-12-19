@@ -22,6 +22,11 @@ super + slash
 super + l
     xsecurelock
 
+# Powermenu
+super + shift + l
+    powermenu.sh
+
+
 # Screenshot
 super + {_,shift +}{v,c,x}
     screenshot.sh {--hidecursor, ""} {"", --selectwindow, --select} --compress
