@@ -47,12 +47,12 @@ XF86AudioMute
 
 # Play / Pause Track
 XF86AudioPlay
-    playerctl play-pause -p spotify;\
+    playerctl play-pause -p spotifyd;\
     playerctl-notifications.sh
 
 # Track Selection
 XF86Audio{Prev,Next}
-    ;playerctl {previous, next} -p spotify ;\
+    ;playerctl {previous, next} -p spotifyd ;\
     sleep 0.15;\
     playerctl-notifications.sh
 
