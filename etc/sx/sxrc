@@ -34,7 +34,6 @@ qbittorrent-nox -d
 # Start flexget daemon
 flexget daemon start -d
 
-spotifyd
 #
 # idk style stuff i guess
 #
