@@ -32,7 +32,7 @@ udiskie &
 qbittorrent-nox -d
 
 # Start flexget daemon
-flexget daemon start -d
+#flexget daemon start -d
 
 #
 # idk style stuff i guess
