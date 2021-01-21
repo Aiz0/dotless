@@ -3,6 +3,7 @@ call plug#begin('$XDG_DATA_HOME/nvim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
+Plug 'vim-scripts/loremipsum'
 
 call plug#end()
 
