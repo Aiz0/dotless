@@ -4,6 +4,7 @@ call plug#begin('$XDG_DATA_HOME/nvim/plugged')
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
 Plug 'vim-scripts/loremipsum'
+Plug 'lervag/vimtex'
 
 call plug#end()
 
@@ -18,7 +19,6 @@ let g:coc_global_extensions = [
   \ 'coc-java',
   \ 'coc-omnisharp',
   \ 'coc-explorer',
-  \ 'coc-texlab',
   \ ]
 
 
