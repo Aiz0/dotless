@@ -5,6 +5,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'sheerun/vim-polyglot'
 Plug 'vim-scripts/loremipsum'
 Plug 'lervag/vimtex'
+Plug 'sbdchd/neoformat'
 
 call plug#end()
 
@@ -14,7 +15,6 @@ let g:coc_global_extensions = [
   \ 'coc-html',
   \ 'coc-rome',
   \ 'coc-json',
-  \ 'coc-prettier',
   \ 'coc-tsserver',
   \ 'coc-java',
   \ 'coc-omnisharp',
@@ -47,6 +47,3 @@ nmap tt :CocCommand explorer<CR>
 
 " statusline
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-
-" coc prettier
-command! -nargs=0 Prettier :CocCommand prettier.formatFile
