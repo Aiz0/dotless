@@ -6,6 +6,7 @@ Plug 'sheerun/vim-polyglot'
 Plug 'vim-scripts/loremipsum'
 Plug 'lervag/vimtex'
 Plug 'sbdchd/neoformat'
+Plug 'OmniSharp/omnisharp-vim'
 
 call plug#end()
 
@@ -17,7 +18,6 @@ let g:coc_global_extensions = [
   \ 'coc-json',
   \ 'coc-tsserver',
   \ 'coc-java',
-  \ 'coc-omnisharp',
   \ 'coc-explorer',
   \ ]
 
