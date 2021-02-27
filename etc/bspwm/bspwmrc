@@ -22,3 +22,5 @@ bspc rule -a Gimp desktop='^8' state=floating follow=on
 bspc rule -a Element desktop='^4'
 bspc rule -a FreeTube desktop='^4'
 bspc rule -a "Hydrus Client" desktop='^10'
+
+bspc rule -a steam_app_1468260 desktop='^7'
