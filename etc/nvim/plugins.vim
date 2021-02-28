@@ -19,6 +19,7 @@ let g:coc_global_extensions = [
   \ 'coc-tsserver',
   \ 'coc-java',
   \ 'coc-explorer',
+  \ 'coc-python'
   \ ]
 
 
@@ -47,3 +48,5 @@ nmap tt :CocCommand explorer<CR>
 
 " statusline
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+
+let g:OmniSharp_server_use_mono = 1
