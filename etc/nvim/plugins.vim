@@ -19,7 +19,8 @@ let g:coc_global_extensions = [
   \ 'coc-tsserver',
   \ 'coc-java',
   \ 'coc-explorer',
-  \ 'coc-python'
+  \ 'coc-python',
+  \ 'coc-vimtex'
   \ ]
 
 
@@ -50,3 +51,14 @@ nmap tt :CocCommand explorer<CR>
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 let g:OmniSharp_server_use_mono = 1
+
+nnoremap <silent> K :call <sid>show_documentation()<cr>
+    function! s:show_documentation()
+        if index(['vim', 'help'], &filetype) >= 0
+          execute 'help ' . expand('<cword>')
+      elseif &filetype ==# 'tex'
+          VimtexDocPackage
+      else
+          call CocAction('doHover')
+    endif
+endfunction
