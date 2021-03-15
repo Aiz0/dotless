@@ -1,4 +1,4 @@
-#!/usr/bin/fish
+#!/bin/fish
 # sceenshots are done with maim
 # compression / optimizing is done with oxipng
 # notifications are done with dunstify
