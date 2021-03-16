@@ -45,16 +45,12 @@ XF86Audio{Raise,Lower}Volume
 XF86AudioMute
     amixer -q set Master toggle
 
-# Play / Pause Track
-XF86AudioPlay
-    playerctl play-pause -p spotifyd;\
-    playerctl-notifications.sh
+# Track Control
+XF86Audio{Play,Prev,Next}
 
-# Track Selection
-XF86Audio{Prev,Next}
-    ;playerctl {previous, next} -p spotifyd ;\
+    ;playerctl {play-pause, previous, next} -p $MUSIC_PLAYER & ;\
     sleep 0.15;\
-    playerctl-notifications.sh
+    playerctl-notifications.sh &
 
 # Get focused window class name via dunst notification
 #super + alt + t

@@ -1,9 +1,11 @@
 #!/bin/fish
-set musicPlayer spotifyd
-set playerStatus (playerctl status -p $musicPlayer)
-
-if test (test "$playerStatus" = "Playing") -o (test "$playerStatus" = "Paused")
-    dunstify -a showMusic $playerStatus (playerctl metadata title -p $musicPlayer)\n(playerctl metadata artist -p $musicPlayer) -r 5
-   else
-    dunstify -a showMusic $playerStatus
+if set -q MUSIC_PLAYER
+    set player --player $MUSIC_PLAYER
 end
+set playerStatus (playerctl status $player)
+
+if contains $playerStatus "Playing" "Paused"
+    set metadata (playerctl metadata --format "{{title}}\n {{artist}}" $player)
+end
+
+dunstify -a showMusic $playerStatus $metadata $player
