@@ -4,7 +4,7 @@ set -gx EDITOR "nvim"
 
 set -gx QT_STYLE_OVERRIDE kvantum
 
-set -gx PATH $PATH "$HOME/bin"
+set -gx PATH $PATH "$HOME/bin" "$XDG_STATE_HOME/cargo/bin"
 
 set -gx DOTBARE_DIR "$XDG_STATE_HOME/dotbare"
 
