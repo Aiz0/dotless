@@ -3,7 +3,7 @@
 set STEAMDIR $XDG_DATA_HOME/steam-home
 
 # create new steamdir if it doesn't exist useful on first launch
-if ! test -d $STEAMDIR
+if ! test -d "$STEAMDIR"
     mkdir -p $STEAMDIR
 end
 
