@@ -9,4 +9,4 @@ end
 
 # set home and launch firefox
 set HOME $MOZDIR
-exec /usr/bin/firefox $argv
+exec /bin/firefox $argv
