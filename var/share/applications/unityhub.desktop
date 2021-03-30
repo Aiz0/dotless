@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Unity Hub
+Exec=unityhub-wrapper
+Terminal=false
+Type=Application
+Icon=unityhub
+StartupWMClass=Unity Hub
+Version=2.4.2
+Comment=The Official Unity Hub
+MimeType=x-scheme-handler/unityhub;
+Categories=Development;
