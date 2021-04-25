@@ -8,10 +8,10 @@ xrandr --output DisplayPort-1  --primary  --output HDMI-A-1  --left-of DisplayPo
 
 # Launch bar
 $XDG_CONFIG_HOME/polybar/launch.sh
-
 bspc monitor DisplayPort-1 -d 1 2 3 4 5
 bspc monitor HDMI-A-1 -d 6 7 8 9 0
-bspc monitor DisplayPort-1 -s HDMI-A-1
+
+bspc wm -O DisplayPort-1 HDMI-A-1
 
 bspc config border_width    2
 bspc config window_gap      4
@@ -29,3 +29,8 @@ bspc rule -a FreeTube desktop='^4'
 bspc rule -a "Hydrus Client" desktop='^10'
 
 bspc rule -a steam_app_1468260 desktop='^7'
+
+
+# wall
+
+nitrogen --restore
