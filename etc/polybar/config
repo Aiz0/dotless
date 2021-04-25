@@ -9,7 +9,7 @@ alert =           #ecc46f
 
 ; Bar used for bspwm
 [bar/bspwmbar]
-monitor = ${env:MONITOR:HDMI-A-1}
+monitor = ${env:MONITOR:}
 enable-ipc=true
 
 width = 100%
@@ -42,15 +42,17 @@ modules-right = pulseaudio updates protonvpn date clock
 [module/bspwm]
 type = internal/bspwm
 
-label-focused = %index%
+pin-workspaces = true
+
+label-focused = %name%
 label-focused-underline = ${colors.foreground}
 
 label-focused-padding = 2
 
-label-occupied = %index%
+label-occupied = %name%
 label-occupied-padding = 2
 
-label-urgent = %index%
+label-urgent = %name%
 label-urgent-background = ${colors.alert}
 label-urgent-padding = 2
 
