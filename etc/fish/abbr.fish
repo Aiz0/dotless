@@ -1,7 +1,5 @@
 abbr c 'clear'
 
-abbr pvpn 'sudo protonvpn'
-
 # git
 
 abbr g   'git'

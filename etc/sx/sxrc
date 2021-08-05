@@ -5,6 +5,10 @@ xrdb -merge $XDG_CONFIG_HOME/sx/Xresources
 # Start dbus
 dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
 
+nm-applet &
+
+protonvpn-cli c --p2p &
+
 # Import Display so dunst can start correctly
 systemctl --user import-environment DISPLAY
 
