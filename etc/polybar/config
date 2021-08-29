@@ -1,6 +1,6 @@
 [colors]
 ; Use colors from Xresources
-background =      #242c38
+background =      #1E222A
 foreground =      #f2f2f2
 foreground-alt =  #f2f2f2
 primary =         #f05656
