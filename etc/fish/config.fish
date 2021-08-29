@@ -1,3 +1,7 @@
+# Zoxide needs to generate shell configuration
+# before any zoxide related aliases
+zoxide init fish | source
+
 source $__fish_config_dir/abbr.fish
 source $__fish_config_dir/aliases.fish
 source $__fish_config_dir/variables.fish
