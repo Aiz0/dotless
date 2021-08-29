@@ -34,8 +34,6 @@ unclutter &
 # Start udiskie to automount USB storage devices
 udiskie &
 
-# Torrent
-qbittorrent-nox -d
 
 # Start flexget daemon
 #flexget daemon start -d
