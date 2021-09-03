@@ -1,4 +1,5 @@
 abbr c 'clear'
+abbr vpn 'protonvpn-cli'
 
 # git
 
