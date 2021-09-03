@@ -1,10 +1,28 @@
 configuration {
-    lines: 5;
-    font: "Roboto mono 12";
+    modi: "window,run,ssh,drun";
     show-icons: true;
+    terminal: "alacritty";
     icon-theme: "Papirus";
+    drun-show-actions: true;
     sort: true;
-    sorting-method: "fzf" ;
+    sorting-method: "fzf";
     scroll-method: 1;
-    theme: "themes/launcher/slate";
+
+   timeout {
+          action: "kb-cancel";
+         delay:  0;
+    }
+
+    filebrowser {
+          directories-first: true;
+         sorting-method:    "name";
+    }
 }
+
+@theme "themes/launcher/slate"
+
+listview {
+    lines: 5;
+}
+
+

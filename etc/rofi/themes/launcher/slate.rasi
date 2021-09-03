@@ -42,6 +42,11 @@ element selected {
   background-color: #2e343f;
 }
 
+element-text {
+  background-color: transparent;
+}
+
 element-icon {
   size: 32px;
+  background-color: transparent;
 }
