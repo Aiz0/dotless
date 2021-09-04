@@ -1,5 +1,7 @@
 # use exa instead of ls
 alias ls=exa
+alias tree='exa --tree'
+
 #z is awkward to press and muscle memory makes me use cd anyways
 alias cd=z
 
