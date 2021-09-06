@@ -1,6 +1,8 @@
 # use exa instead of ls
-alias ls=exa
+alias ls="exa"
 alias tree='exa --tree'
+alias l="exa --long --header --git"
+alias ll="exa --long --header --git --all"
 
 #z is awkward to press and muscle memory makes me use cd anyways
 alias cd=z
