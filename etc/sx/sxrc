@@ -20,8 +20,6 @@ xset r rate 275 40
 # background stuff
 #
 
-check-twitch.sh &
-
 # Hides mouse when it hasn't been used for a while
 unclutter &
 
