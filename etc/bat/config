@@ -1,0 +1,5 @@
+# Specify desired highlighting theme
+--theme="ansi"
+
+# Italic text is not supported on all terminal emulators
+--italic-text=always
