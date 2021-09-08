@@ -2,15 +2,9 @@
 
 xrdb -merge $XDG_CONFIG_HOME/sx/Xresources
 
-# Start dbus
-dbus-update-activation-environment --systemd DBUS_SESSION_BUS_ADDRESS DISPLAY XAUTHORITY
-
+# vpn
 nm-applet &
-
 protonvpn-cli c --p2p &
-
-# Import Display so dunst can start correctly
-systemctl --user import-environment DISPLAY
 
 #
 # X things
@@ -42,6 +36,14 @@ udiskie &
 # idk style stuff i guess
 #
 
+# start some nice programs
+
+if [ -d /etc/X11/xinit/xinitrc.d ] ; then
+ for f in /etc/X11/xinit/xinitrc.d/?*.sh ; do
+  [ -x "$f" ] && . "$f"
+ done
+ unset f
+fi
 # Start compositor
 picom -b
 
