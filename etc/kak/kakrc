@@ -1,0 +1,25 @@
+#
+# kakrc
+#
+
+# Editor
+#
+
+# default tab size
+set-option global tabstop 4
+set-option global indentwidth 4
+
+# kak-lsp
+eval %sh{kak-lsp --kakoune -s $kak_session}
+lsp-enable
+lsp-auto-hover-enable
+
+
+# UI
+#
+
+add-highlighter global/ number-lines -relative -hlcursor -separator ' '
+add-highlighter global/ show-whitespaces  -lf ' ' -spc ' '
+add-highlighter global/ regex '\h+$' 0:Error
+set-option global ui_options terminal_assistant=none
+
