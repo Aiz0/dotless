@@ -4,7 +4,7 @@ face global identifier    bright-blue
 face global string        green
 face global error         red
 face global keyword       yellow
-face global operator      rgb:ff0000,rgb:000000
+face global operator      bright-cyan
 face global attribute     bright-blue
 face global comment       bright-magenta+i
 face global documentation comment
