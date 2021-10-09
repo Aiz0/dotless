@@ -8,6 +8,9 @@ if contains $playerStatus "Playing" "Paused"
     set metadata (playerctl metadata --format "{{title}}\n {{artist}}" $player)
     set iconPath /tmp/dunst_spotify_icon
     curl -s -o $iconPath (playerctl metadata mpris:artUrl)
+    set icon --icon $iconPath
+else if test -z $playerStatus
+    set playerStatus Stopped
 end
 
-dunstify -a showMusic $playerStatus $metadata -i $iconPath -r 5
+dunstify -a showMusic $playerStatus $metadata $icon --replace 5
