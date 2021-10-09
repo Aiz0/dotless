@@ -48,7 +48,7 @@ XF86AudioMute
 # Track Control
 XF86Audio{Play,Prev,Next}
 
-    ;playerctl {play-pause, previous, next} -p $MUSIC_PLAYER & ;\
+    playerctl {play-pause, previous, next} -p $MUSIC_PLAYER ;\
     sleep 0.15;\
     playerctl-notifications.sh &
 

@@ -10,4 +10,4 @@ if contains $playerStatus "Playing" "Paused"
     curl -s -o $iconPath (playerctl metadata mpris:artUrl)
 end
 
-dunstify -a showMusic $playerStatus $metadata -i $iconPath
+dunstify -a showMusic $playerStatus $metadata -i $iconPath -r 5
