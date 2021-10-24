@@ -5,8 +5,6 @@ Wants=network-online.target
 After=network-online.target nss-lookup.target
 
 [Service]
-Type=exec
+Type=simple
 ExecStart=/usr/bin/qbittorrent-nox
-
-[Install]
-WantedBy=default.target
+ExecStop=/usr/bin/killall --wait qbittorent-nox

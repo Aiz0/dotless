@@ -1,0 +1,12 @@
+[Unit]
+Description=ProtonVPN-CLI service
+After=nm-applet.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=protonvpn-cli killswitch --off
+ExecStart=protonvpn-cli killswitch --permanent
+ExecStart=protonvpn-cli connect --p2p
+ExecStart=protonvpn-cli reconnect
+ExecStop=protonvpn-cli disconnect
