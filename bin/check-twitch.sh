@@ -18,7 +18,7 @@ while true
             end
         end
         if string match -qe -- "$message" "offline"
-            set $$channel 0
+            set $channel 0
         end
     end
     sleep $interval
