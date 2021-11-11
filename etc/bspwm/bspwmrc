@@ -4,7 +4,7 @@
 sxhkd -m 1 &
 
 # screen layout
-xrandr --output DisplayPort-1  --primary  --output HDMI-A-1  --right-of DisplayPort-1
+xrandr --output DisplayPort-1  --primary  --output HDMI-A-1  --right-of DisplayPort-1 --dpi 96
 
 # Launch bar
 $XDG_CONFIG_HOME/polybar/launch.sh
