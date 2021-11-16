@@ -1,0 +1,5 @@
+#!/bin/fish
+# Wrapper script for spotify to delete ~/Downloads after launch if it's empty
+/bin/spotify &
+
+sleep 0.2; rm -d ~/Downloads
