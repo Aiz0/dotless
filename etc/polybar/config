@@ -38,7 +38,8 @@ padding = 2
 modules-left = bspwm
 modules-right = pulseaudio updates protonvpn date clock
 
-tray-position = none
+tray-position = left
+tray-scale = 0
 
 ; bspwm module
 [module/bspwm]
