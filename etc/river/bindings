@@ -1,0 +1,125 @@
+#!/bin/sh
+
+#===============================================#
+# Keybinds
+#===============================================#
+# Use Super as mod
+mod="Mod4"
+
+# Terminal
+riverctl map normal $mod Return spawn alacritty
+
+# Launcher
+riverctl map normal $mod Space spawn "fuzzel --font monospace:20 --lines 5 --width 50 --horizontal-pad 20 --background 282C33FF --text-color f2f2f4ff  --match-color 71c6ffff --selection-color 2e343fff --selection-text-color f2f2f4ff --border-width 0 --border-radius 0"
+# Close the focused view
+riverctl map normal $mod W close
+
+# Reload configuration
+riverctl map normal $mod+Mod1 Escape spawn "$XDG_CONFIG_HOME/river/init; notify-send reloaded"
+
+# Exit river
+riverctl map normal $mod+Shift Q exit
+
+# Lock
+riverctl map normal $mod L spawn "swaylock --color 000000"
+
+# Focus the next/previous view in the layout stack
+riverctl map normal $mod N focus-view next
+riverctl map normal $mod E focus-view previous
+
+# Swap the focused view with the next/previous
+# view in the layout stack
+riverctl map normal $mod+Shift N swap next
+riverctl map normal $mod+Shift E swap previous
+
+# Mod+Period and Mod+Comma to focus the next/previous output
+riverctl map normal $mod Period focus-output next
+riverctl map normal $mod Comma focus-output previous
+
+# Mod+Shift+{Period,Comma} to send the focused view to the next/previous output
+riverctl map normal $mod+Shift Period send-to-output next
+riverctl map normal $mod+Shift Comma send-to-output previous
+
+# Mod+Return to bump the focused view to the top of the layout stack
+#riverctl map normal $mod Return zoom
+
+
+
+# Mod+Alt+{H,J,K,L} to move views
+riverctl map normal $mod+Mod1 M move left 100
+riverctl map normal $mod+Mod1 N move down 100
+riverctl map normal $mod+Mod1 E move up 100
+riverctl map normal $mod+Mod1 I move right 100
+
+# Mod+Alt+Control+{H,J,K,L} to snap views to screen edges
+riverctl map normal $mod+Mod1+Control M snap left
+riverctl map normal $mod+Mod1+Control N snap down
+riverctl map normal $mod+Mod1+Control E snap up
+riverctl map normal $mod+Mod1+Control I snap right
+
+# Mod+Alt+Shif+{H,J,K,L} to resize views
+riverctl map normal $mod+Mod1+Shift M resize horizontal -100
+riverctl map normal $mod+Mod1+Shift N resize vertical 100
+riverctl map normal $mod+Mod1+Shift E resize vertical -100
+riverctl map normal $mod+Mod1+Shift I resize horizontal 100
+
+# Mod + Left Mouse Button to move views
+riverctl map-pointer normal $mod BTN_LEFT move-view
+
+# Mod + Right Mouse Button to resize views
+riverctl map-pointer normal $mod BTN_RIGHT resize-view
+
+for i in $(seq 1 9)
+do
+    tags=$((1 << ($i - 1)))
+
+    # Mod+[1-9] to focus tag [0-8]
+    riverctl map normal $mod $i set-focused-tags $tags
+
+    # Mod+Shift+[1-9] to tag focused view with tag [0-8]
+    riverctl map normal $mod+Shift $i set-view-tags $tags
+
+    # Mod+Ctrl+[1-9] to toggle focus of tag [0-8]
+    riverctl map normal $mod+Control $i toggle-focused-tags $tags
+
+    # Mod+Shift+Ctrl+[1-9] to toggle tag [0-8] of focused view
+    riverctl map normal $mod+Shift+Control $i toggle-view-tags $tags
+done
+
+# Mod+0 to focus all tags
+# Mod+Shift+0 to tag focused view with all tags
+all_tags=$(((1 << 32) - 1))
+riverctl map normal $mod 0 set-focused-tags $all_tags
+riverctl map normal $mod+Shift 0 set-view-tags $all_tags
+
+# Mod+Space to toggle float
+riverctl map normal $mod+Shift F toggle-float
+
+# Mod+F to toggle fullscreen
+riverctl map normal $mod F toggle-fullscreen
+
+# Mod+{Up,Right,Down,Left} to change layout orientation
+riverctl map normal $mod Up    set-layout-value rivertile string main_location top
+riverctl map normal $mod Right set-layout-value rivertile string main_location right
+riverctl map normal $mod Down  set-layout-value rivertile string main_location bottom
+riverctl map normal $mod Left  set-layout-value rivertile string main_location left
+
+
+# Various media key mapping examples for both normal and locked mode which do
+# not have a modifier
+for mode in normal locked
+do
+    # Control pulse audio volume with pamixer (https://github.com/cdemoulins/pamixer)
+    riverctl map $mode None XF86AudioRaiseVolume  spawn "pamixer -i 5; notify-volume.sh"
+    riverctl map $mode None XF86AudioLowerVolume  spawn "pamixer -d 5; notify-volume.sh"
+    riverctl map $mode None XF86AudioMute         spawn "pamixer --toggle-mute"
+
+    # Control MPRIS aware media players with playerctl (https://github.com/altdesktop/playerctl)
+    riverctl map $mode None XF86AudioMedia spawn "playerctl play-pause; sleep 0.15; playerctl-notifications.sh &"
+    riverctl map $mode None XF86AudioPlay  spawn "playerctl play-pause; sleep 0.15; playerctl-notifications.sh &"
+    riverctl map $mode None XF86AudioPrev  spawn "playerctl previous; sleep 0.15; playerctl-notifications.sh &"
+    riverctl map $mode None XF86AudioNext  spawn "playerctl next; sleep 0.15; playerctl-notifications.sh &"
+done
+
+riverctl map normal $mod D spawn "wl-screenshot.sh --optimize"
+riverctl map normal $mod C spawn "wl-screenshot.sh --select --copy --optimize"

@@ -1,0 +1,6 @@
+[Unit]
+Description=Waybar service
+Documentation=man:waybar
+
+[Service]
+ExecStart=/usr/bin/waybar

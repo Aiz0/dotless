@@ -1,0 +1,6 @@
+[Unit]
+Description=foot server service
+Documentation=man:foot
+
+[Service]
+ExecStart=/usr/bin/foot --server
