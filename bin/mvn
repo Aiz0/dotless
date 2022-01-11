@@ -2,4 +2,4 @@
 # Wrapper script for maven to remove .m2 folder from home directory
 # launches maven with alt path for global settings
 # settings file says where the repository is located
-exec mvn -gs $XDG_CONFIG_HOME/maven/settings.xml $argv
+exec /usr/bin/mvn -gs $XDG_CONFIG_HOME/maven/settings.xml $argv
