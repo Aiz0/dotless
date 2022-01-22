@@ -5,8 +5,11 @@ After=nm-applet.service
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=protonvpn-cli killswitch --off
-ExecStart=protonvpn-cli killswitch --permanent
+ExecStartPre=-protonvpn-cli killswitch --off
+ExecStartPre=-protonvpn-cli killswitch --permanent
 ExecStart=protonvpn-cli connect --p2p
-ExecStart=protonvpn-cli reconnect
+ExecStartPost=-protonvpn-cli disconnect
+ExecStartPost=-protonvpn-cli reconnect
+TimeoutStartSec=30
 ExecStop=protonvpn-cli disconnect
+Restart=on-failure
