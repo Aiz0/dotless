@@ -23,14 +23,6 @@ bspc config split_ratio     0.5
 bspc config borderless_monocle  true
 bspc config gapless_monocle     true
 
-bspc rule -a Gimp desktop='^8' state=floating follow=on
-bspc rule -a Element desktop='^4'
-bspc rule -a FreeTube desktop='^4'
-bspc rule -a "Hydrus Client" desktop='^10'
-
-bspc rule -a steam_app_1468260 desktop='^7'
-
-
 # wall
 
 nitrogen --restore
