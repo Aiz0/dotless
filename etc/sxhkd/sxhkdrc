@@ -4,7 +4,7 @@
 
 # Terminal emulator
 super + Return
-    $TERM
+    $TERMINAL
 
 # Program launcher
 super + @space
