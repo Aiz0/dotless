@@ -6,8 +6,8 @@ function fish_colemak_vi_key_bindings
     bind -s --preset -M default i forward-char
 
     # insert
-    bind -s --preset -m insert u repaint-mode
-    bind -s --preset -m insert U beginning-of-line repaint-mode
+    bind -s --preset -m insert l repaint-mode
+    bind -s --preset -m insert L beginning-of-line repaint-mode
 
 
     bind -s --preset e up-or-search
