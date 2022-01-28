@@ -1,6 +1,10 @@
 [global]
 
-    geometry = "350x100-16+36"
+    width = 350
+    height = 100
+    offset = 16x36
+    origin = top-right
+
     separator_height = 1
     padding = 10
     horizontal_padding = 10
