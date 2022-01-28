@@ -1,6 +1,6 @@
 [Unit]
 Description=Kanshi service
-Documentaion=man:kanshi
+Documentation=man:kanshi
 
 [Service]
 ExecStart=/usr/bin/kanshi
