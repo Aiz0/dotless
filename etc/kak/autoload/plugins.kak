@@ -13,13 +13,13 @@ evaluate-commands %sh{
 plug "andreyorst/plug.kak" noload
 
 plug "lePerdu/kakboard" %{
-	hook global WinCreate .* %{ kakboard-enable }
+    hook global WinCreate .* %{ kakboard-enable }
 }
 
 plug "andreyorst/smarttab.kak" defer smarttab %{
     set-option global softtabstop 4
 } config %{
-	hook global WinSetOption filetype=.* expandtab
+    hook global WinSetOption filetype=.* expandtab
 }
 
 plug "andreyorst/powerline.kak" defer powerline %{
