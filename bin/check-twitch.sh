@@ -9,6 +9,7 @@ for channel in $FOLLOWEDTWITCHCHANNELS
 end
 
 while true
+    sleep $interval
     for channel in $FOLLOWEDTWITCHCHANNELS
         set message (twitchnotifier --user $channel)
         if test $$channel -eq 0
@@ -21,5 +22,4 @@ while true
             set $channel 0
         end
     end
-    sleep $interval
 end
