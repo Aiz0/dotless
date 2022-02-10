@@ -1,6 +1,12 @@
 [Unit]
 Description=NetworkManager applet service
-Documentation=man:nm-applet
+Documentation=man:nm-applet(1)
+PartOf=graphical-session.target
+After=graphical-session.target
 
 [Service]
+Type=simple
 ExecStart=/usr/bin/nm-applet
+
+[Install]
+WantedBy=graphical-session.target

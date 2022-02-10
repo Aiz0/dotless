@@ -1,11 +1,11 @@
 [Unit]
 Description=check-twitch service
-Wants=network-online.target
-After=network-online.target nss-lookup.target
+PartOf=graphical-session.target
+After=graphical-session.target
 
 [Service]
-Type=exec
-ExecStart=/home/aiz/bin/check-twitch.sh
+Type=simple
+ExecStart=%h/bin/check-twitch.sh
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target

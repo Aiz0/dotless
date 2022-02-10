@@ -1,6 +1,10 @@
 [Unit]
 Description=Waybar service
-Documentation=man:waybar
+Documentation=man:waybar(1)
+PartOf=wayland-session.target
 
 [Service]
 ExecStart=/usr/bin/waybar
+
+[Install]
+WantedBy=wayland-session.target

@@ -1,10 +1,10 @@
 [Unit]
-Description=Oguri wallpaper daemon
+Description=Import gsettings on wayland
 PartOf=wayland-session.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/oguri
+ExecStart=%h/bin/import-gsettings.sh
 
 [Install]
 WantedBy=wayland-session.target

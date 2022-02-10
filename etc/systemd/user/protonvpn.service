@@ -1,6 +1,9 @@
 [Unit]
 Description=ProtonVPN-CLI service
-After=nm-applet.service
+PartOf=graphical-session.target
+Wants=nm-applet.service
+PartOf=graphical-session.target
+After=graphical-session.target nm-applet.service
 
 [Service]
 Type=oneshot
@@ -13,3 +16,6 @@ ExecStartPost=-protonvpn-cli reconnect
 TimeoutStartSec=30
 ExecStop=protonvpn-cli disconnect
 Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

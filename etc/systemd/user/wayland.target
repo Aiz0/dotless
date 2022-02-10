@@ -1,4 +1,0 @@
-[Unit]
-Description=Wayland
-RefuseManualStart=no
-StopWhenUnneeded=no

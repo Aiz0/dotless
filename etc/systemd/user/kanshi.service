@@ -1,6 +1,11 @@
 [Unit]
 Description=Kanshi service
 Documentation=man:kanshi
+PartOf=wayland-session.target
 
 [Service]
+Type=simple
 ExecStart=/usr/bin/kanshi
+
+[Install]
+WantedBy=wayland-session.target
