@@ -14,7 +14,7 @@ riverctl map normal Super Space spawn "fuzzel --font monospace:20 --lines 5 --wi
 
 
 # Lock
-riverctl map normal Super L spawn "swaylock --color 000000"
+riverctl map normal Super L spawn "swaylock -f"
 
 # Screenshot
 riverctl map normal Super D spawn "wl-screenshot.sh --optimize"
