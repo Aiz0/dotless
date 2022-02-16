@@ -1,6 +1,12 @@
 #!/bin/fish
 
-for file in (status dirname)/conf.d/*
+set dir (status dirname)
+
+# source all river configuration
+for file in $dir/conf.d/*
    source $file
 end
+
+# source layout generator specific configuration
+source $dir/layout/stacktile.fish
 

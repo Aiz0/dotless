@@ -1,0 +1,9 @@
+[Unit]
+Description=A layout generator for river
+Documentation=man:stacktile(1)
+PartOf=wayland-session.target
+After=wayland-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/bin/stacktile.sh
