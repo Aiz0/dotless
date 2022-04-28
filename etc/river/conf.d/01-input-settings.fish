@@ -1,8 +1,7 @@
 #!/bin/fish
 
 # all inputs
-# string collect can be replaced with "$(cmd)" in fish 3.4.0
-set inputs (riverctl list-inputs | string collect)
+set inputs "$(riverctl list-inputs)"
 
 # easily list input names of a certain type
 function list-input-type -a input_type
