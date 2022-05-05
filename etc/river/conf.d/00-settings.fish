@@ -4,14 +4,20 @@
 # Global
 #
 
-#keyboard repeat rate
+# Keyboard repeat rate
 riverctl set-repeat 40 275
 riverctl xcursor-theme posy-black
+
+# Hide cursor after 5s
+riverctl hide-cursor timeout 5000
 
 # Attach new views at bottom of view stack
 riverctl attach-mode bottom
 
-# border
+# Default Background
+riverctl background-color 0x29B6F6
+
+# Border
 riverctl border-width 2
 riverctl border-color-unfocused 0x333B47
 riverctl border-color-focused 0x64B9F2
