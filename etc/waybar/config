@@ -3,32 +3,58 @@
     "modules-left": [
         "river/tags"
     ],
+    "modules-center": [
+        "clock#date",
+        "clock#time"
+    ],
     "modules-right": [
         "pulseaudio",
         "custom/vpn",
         "custom/pacman",
-        "clock#date",
-        "clock#time"
+        "idle_inhibitor",
+        "cpu",
+        "memory",
+        "disk",
     ],
    "river/tags": {
        "num-tags": 9
     },
     "clock#date": {
-        "format": "󰃭 {:%Y-%m-%d}",
+        "format": "{:%a %b %d}",
         "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
         "interval": 5
     },
 
     "clock#time": {
-        "format": "󰅐 {:%H:%M}",
+        "format": "{:%R}",
         "interval": 5,
-        "tooltip": false
+        "tooltip-format": "{:%H:%M}"
     },
     "pulseaudio": {
         "format": "",
         "format-muted": "󰝟",
         "format-source-muted": "",
     },
+
+    "cpu": {
+        "format": "󰍛{usage}%"
+    },
+    "memory": {
+        "format": "󰘚{percentage}%"
+    },
+    "disk": {
+        "format": "{free}",
+        "path": "/home/"
+    },
+
+    "idle_inhibitor": {
+        "format": "{icon}",
+        "format-icons": {
+            "activated": "",
+            "deactivated": ""
+        }
+    },
+
     "custom/vpn": {
         "exec": "echo '{\"text\": \"connected\"}'",
         "exec-if": "test -d /proc/sys/net/ipv4/conf/proton0",
@@ -38,7 +64,7 @@
     "custom/pacman": {
         "exec": "$XDG_CONFIG_HOME/waybar/scripts/pacman.sh",
         "return-type": "json",
-        "interval": 3600,
+        "interval": 7200,
         "signal": 1,
         "tooltip": false
     }
