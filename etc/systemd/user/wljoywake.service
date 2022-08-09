@@ -1,0 +1,11 @@
+[Unit]
+Description=Wayland tool for idle inhibit when using joysticks
+Documentation=https://github.com/nowrep/wljoywake
+PartOf=wayland-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/wljoywake
+
+[Install]
+WantedBy=wayland-session.target
