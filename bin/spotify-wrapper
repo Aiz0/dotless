@@ -4,3 +4,5 @@
 /bin/spotify &
 sleep 0.2
 rmdir ~/Downloads/
+sleep 1
+riverctl toggle-float
