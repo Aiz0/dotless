@@ -10,5 +10,5 @@ function get_commit_message
     set DESCRIPTION (gum write --placeholder "Details of this change (CTRL+D to finish)")
 
     # Commit these changes
-    echo -- -m "$SUMMARY" -m "$DESCRIPTION"
+    printf -- '-m "%s" -m "%s"' "$SUMMARY" "$DESCRIPTION"
 end
