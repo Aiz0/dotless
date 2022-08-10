@@ -1,4 +1,4 @@
 function dbc
     set message (get_commit_message)
-    gum confirm "Commit changes?"  && dotbare commit $message $argv
+    gum confirm "Commit changes?"  && eval "dotbare commit $message $argv"
 end
