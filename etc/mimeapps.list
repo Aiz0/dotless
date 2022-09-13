@@ -18,6 +18,10 @@ image/webp=firefox.desktop
 image/avif=firefox.desktop
 
 [Default Applications]
+text/plain=kcr.desktop
+
+
+# HTML/xml firefox
 text/html=firefox.desktop
 text/xml=firefox.desktop
 application/xhtml+xml=firefox.desktop
