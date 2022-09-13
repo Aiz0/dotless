@@ -12,22 +12,11 @@ end
 
 # parse the command line options
 # showcursor - includes the cursor in the screenshot
-# output - capture a selected output
-# select - select an area
-# selectwindow - select a view
+# select=output - select an output
+# select=view - select a view
+# select=area - select an area
 # compress - compress the image with oxipng
-argparse 'showcursor' 'output' 'select' 'selectview' 'optimize' 'copy' -- $argv
-
-# should cursor be hidden
-if test $_flag_showcursor
-    set scr_options -c
-end
-
-# should an output, area or window be selected
-if test $_flag_output
-    #TODO
-    #set scr_options  -o
-end
+argparse 'show_cursor' 'select=?' 'optimize' 'copy' -- $argv
 
 
 # where should image be saved
@@ -43,16 +32,40 @@ set fullpath $scr_dir/$date_dir/$image_name.$extension
 # make sure directory exists so we can actually save the image there
 mkdir -p $scr_dir/$date_dir
 
-#select area
+
+
+# Show cursor
+if test $_flag_show_cursor
+    set -a grim_options "-c"
+end
+
+
+# Select a wayland region with slurp
 if test $_flag_select
-    set scr_options $scr_options -g (slurp)
-else if test $_flag_selectview
-    # TODO
-    set scr_options $scr_options -g (slurp)
+    switch $_flag_select
+        case output
+            # -o adds predefined rectangles for all outputs and
+            # -r requires you to select one
+            set slurp_options "-or"
+        case view
+            echo "Selecting a view is currently not supported!"
+            # TODO provide slurp with a list of rectangles
+            # one for each view
+        case area ''
+            echo '1'
+        case '*'
+            echo "Not sure what you want to select"
+            exit
+    end
+    set -a grim_options "-g" (slurp $slurp_options)
+    if test $status -ne 0
+        echo "No region selected. Exiting."
+        exit
+    end
 end
 
 # Screenshot time
-grim $scr_options $fullpath
+grim $grim_options $fullpath
 
 if test -e $fullpath
     # oxipng can only optimze png images
