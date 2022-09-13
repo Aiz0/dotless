@@ -1,4 +1,6 @@
-function get_commit_message
+function gum_commit
+    argparse 'dotbare' -- $argv
+
     set TYPE (gum choose "fix" "feat" "docs" "style" "refactor" "test" "chore" "revert")
     set SCOPE (gum input --placeholder "scope")
 
@@ -9,6 +11,11 @@ function get_commit_message
     set SUMMARY (gum input --value "$TYPE$SCOPE: " --placeholder "Summary of this change")
     set DESCRIPTION (gum write --placeholder "Details of this change (CTRL+D to finish)")
 
-    # Commit these changes
-    printf -- '-m "%s" -m "%s"' "$SUMMARY" "$DESCRIPTION"
+    if gum confirm "Commit changes?"
+        if test $_flag_dotbare
+            dotbare commit -m "$SUMMARY" -m "$DESCRIPTION"
+        else
+            git commit -m "$SUMMARY" -m "$DESCRIPTION"
+        end
+    end
 end
