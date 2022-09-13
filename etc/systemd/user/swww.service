@@ -1,0 +1,11 @@
+[Unit]
+Description=swww daemon
+Documentation=https://github.com/Horus645/swww
+PartOf=wayland-session.target
+
+[Service]
+Type=simple
+ExecStart=swww init --no-daemon
+
+[Install]
+WantedBy=wayland-session.target
