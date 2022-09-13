@@ -16,6 +16,15 @@ plug "lePerdu/kakboard" %{
     hook global WinCreate .* %{ kakboard-enable }
 }
 
+plug "alexherbo2/show-whitespace.kak" %{
+    add-highlighter global/whitespace ref whitespace
+    set-face global Indent default+F
+}
+plug "alexherbo2/auto-pairs.kak" %{
+    enable-auto-pairs
+    set-option global auto_pairs ( ) { } [ ] '"' '"' "'" "'" ` ` “ ” ‘ ’ « » ‹ ›
+}
+
 plug "andreyorst/smarttab.kak" defer smarttab %{
     set-option global softtabstop 4
 } config %{
@@ -35,4 +44,8 @@ plug "eraserhd/parinfer-rust" do %{
     hook global WinSetOption filetype=(clojure|lisp|scheme|racket) %{
         parinfer-enable-window -smart
     }
+}
+
+plug "laelath/kakoune-show-matching-insert" %{
+    add-highlighter global/ ranges show_matching_insert
 }
