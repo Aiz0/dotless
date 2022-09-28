@@ -19,6 +19,7 @@ image/avif=firefox.desktop
 
 [Default Applications]
 text/plain=kcr.desktop
+application/json=kcr.desktop
 
 
 # HTML/xml firefox
