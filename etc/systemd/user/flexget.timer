@@ -1,0 +1,10 @@
+[Unit]
+Description=Schedule running flexget approx.
+
+[Timer]
+Persistent=true
+OnUnitInactiveSec=3h
+OnBootSec=120
+
+[Install]
+WantedBy=timers.target

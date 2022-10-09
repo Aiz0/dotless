@@ -1,0 +1,12 @@
+[Unit]
+Description=Flexget execute service
+Wants=network-online.target
+After=network-online.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/src/flexget/bin/flexget execute --now
+
+[Install]
+WantedBy=graphical-session.target
