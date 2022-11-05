@@ -4,4 +4,4 @@
 # Gets the Right volume
 set volume (amixer sget Master | grep 'Right:' | awk -F '[][]' '{ print $2 }')
 
-dunstify -a showVolume Volume $volume -r 6
+notify-send Volume $volume -r 6

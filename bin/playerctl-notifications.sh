@@ -13,4 +13,4 @@ else if test -z $playerStatus
     set playerStatus Stopped
 end
 
-dunstify -a showMusic $playerStatus $metadata $icon --replace 5
+notify-send $playerStatus $metadata $icon --replace 5

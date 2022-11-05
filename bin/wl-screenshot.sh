@@ -3,7 +3,6 @@
 # Area selected with slurp
 # Images are grabbed with grim
 # compression / optimizing is done with oxipng
-# notifications are done with dunstify
 
 # Make sure script isn't already running
 if pidof -o %PPID -x (status filename) > /dev/null
@@ -78,6 +77,6 @@ if test -e $fullpath
         wl-copy < $fullpath
     end
 
-    dunstify -r 5557 -a screenshot "Cheese!" "Screenshot saved as\n"$image_name.$extension
+    notify-send -r 5557 "Cheese!" "Screenshot saved as\n"$image_name.$extension
 end
 

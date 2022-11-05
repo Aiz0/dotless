@@ -1,6 +1,6 @@
 #!/bin/fish
 # please set FOLLOWEDTWITCHCHANNELS variable with set -U
-# uses twitchnotifier & dunstify
+# uses twitchnotifier
 
 set interval 120
 
@@ -15,7 +15,7 @@ while true
         if test $$channel -eq 0
             if string match -qe -- "online" $message
                 set $channel 1
-                dunstify Twitch $message -t 0
+                notify-send Twitch $message -t 0
             end
         end
         if string match -qe -- "$message" "offline"
