@@ -73,7 +73,6 @@ tasks:
       format:
         - tv
         - tv_short
-      release_status: releasing
     set:
       # Use english title instead of romaji title
       # Torrents use SX instead of Season X
