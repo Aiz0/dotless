@@ -1,1230 +1,3 @@
---[[
-    Copyright (C) 2017 AMM
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-]]--
---[[
-    mpv_thumbnail_script.lua 0.4.4 - commit a8a910c (branch master)
-    https://github.com/TheAMM/mpv_thumbnail_script
-    Built on 2021-05-11 23:50:44
-]]--
-local assdraw = require 'mp.assdraw'
-local msg = require 'mp.msg'
-local opt = require 'mp.options'
-local utils = require 'mp.utils'
-
--- Determine platform --
-ON_WINDOWS = (package.config:sub(1,1) ~= '/')
-
--- Some helper functions needed to parse the options --
-function isempty(v) return (v == false) or (v == nil) or (v == "") or (v == 0) or (type(v) == "table" and next(v) == nil) end
-
-function divmod (a, b)
-  return math.floor(a / b), a % b
-end
-
--- Better modulo
-function bmod( i, N )
-  return (i % N + N) % N
-end
-
-function join_paths(...)
-  local sep = ON_WINDOWS and "\\" or "/"
-  local result = "";
-  for i, p in pairs({...}) do
-    if p ~= "" then
-      if is_absolute_path(p) then
-        result = p
-      else
-        result = (result ~= "") and (result:gsub("[\\"..sep.."]*$", "") .. sep .. p) or p
-      end
-    end
-  end
-  return result:gsub("[\\"..sep.."]*$", "")
-end
-
--- /some/path/file.ext -> /some/path, file.ext
-function split_path( path )
-  local sep = ON_WINDOWS and "\\" or "/"
-  local first_index, last_index = path:find('^.*' .. sep)
-
-  if last_index == nil then
-    return "", path
-  else
-    local dir = path:sub(0, last_index-1)
-    local file = path:sub(last_index+1, -1)
-
-    return dir, file
-  end
-end
-
-function is_absolute_path( path )
-  local tmp, is_win  = path:gsub("^[A-Z]:\\", "")
-  local tmp, is_unix = path:gsub("^/", "")
-  return (is_win > 0) or (is_unix > 0)
-end
-
-function Set(source)
-  local set = {}
-  for _, l in ipairs(source) do set[l] = true end
-  return set
-end
-
----------------------------
--- More helper functions --
----------------------------
-
--- Removes all keys from a table, without destroying the reference to it
-function clear_table(target)
-  for key, value in pairs(target) do
-    target[key] = nil
-  end
-end
-function shallow_copy(target)
-  local copy = {}
-  for k, v in pairs(target) do
-    copy[k] = v
-  end
-  return copy
-end
-
--- Rounds to given decimals. eg. round_dec(3.145, 0) => 3
-function round_dec(num, idp)
-  local mult = 10^(idp or 0)
-  return math.floor(num * mult + 0.5) / mult
-end
-
-function file_exists(name)
-  local f = io.open(name, "rb")
-  if f ~= nil then
-    local ok, err, code = f:read(1)
-    io.close(f)
-    return code == nil
-  else
-    return false
-  end
-end
-
-function path_exists(name)
-  local f = io.open(name, "rb")
-  if f ~= nil then
-    io.close(f)
-    return true
-  else
-    return false
-  end
-end
-
-function create_directories(path)
-  local cmd
-  if ON_WINDOWS then
-    cmd = { args = {"cmd", "/c", "mkdir", path} }
-  else
-    cmd = { args = {"mkdir", "-p", path} }
-  end
-  utils.subprocess(cmd)
-end
-
--- Find an executable in PATH or CWD with the given name
-function find_executable(name)
-  local delim = ON_WINDOWS and ";" or ":"
-
-  local pwd = os.getenv("PWD") or utils.getcwd()
-  local path = os.getenv("PATH")
-
-  local env_path = pwd .. delim .. path -- Check CWD first
-
-  local result, filename
-  for path_dir in env_path:gmatch("[^"..delim.."]+") do
-    filename = join_paths(path_dir, name)
-    if file_exists(filename) then
-      result = filename
-      break
-    end
-  end
-
-  return result
-end
-
-local ExecutableFinder = { path_cache = {} }
--- Searches for an executable and caches the result if any
-function ExecutableFinder:get_executable_path( name, raw_name )
-  name = ON_WINDOWS and not raw_name and (name .. ".exe") or name
-
-  if self.path_cache[name] == nil then
-    self.path_cache[name] = find_executable(name) or false
-  end
-  return self.path_cache[name]
-end
-
--- Format seconds to HH.MM.SS.sss
-function format_time(seconds, sep, decimals)
-  decimals = decimals == nil and 3 or decimals
-  sep = sep and sep or "."
-  local s = seconds
-  local h, s = divmod(s, 60*60)
-  local m, s = divmod(s, 60)
-
-  local second_format = string.format("%%0%d.%df", 2+(decimals > 0 and decimals+1 or 0), decimals)
-
-  return string.format("%02d"..sep.."%02d"..sep..second_format, h, m, s)
-end
-
--- Format seconds to 1h 2m 3.4s
-function format_time_hms(seconds, sep, decimals, force_full)
-  decimals = decimals == nil and 1 or decimals
-  sep = sep ~= nil and sep or " "
-
-  local s = seconds
-  local h, s = divmod(s, 60*60)
-  local m, s = divmod(s, 60)
-
-  if force_full or h > 0 then
-    return string.format("%dh"..sep.."%dm"..sep.."%." .. tostring(decimals) .. "fs", h, m, s)
-  elseif m > 0 then
-    return string.format("%dm"..sep.."%." .. tostring(decimals) .. "fs", m, s)
-  else
-    return string.format("%." .. tostring(decimals) .. "fs", s)
-  end
-end
-
--- Writes text on OSD and console
-function log_info(txt, timeout)
-  timeout = timeout or 1.5
-  msg.info(txt)
-  mp.osd_message(txt, timeout)
-end
-
--- Join table items, ala ({"a", "b", "c"}, "=", "-", ", ") => "=a-, =b-, =c-"
-function join_table(source, before, after, sep)
-  before = before or ""
-  after = after or ""
-  sep = sep or ", "
-  local result = ""
-  for i, v in pairs(source) do
-    if not isempty(v) then
-      local part = before .. v .. after
-      if i == 1 then
-        result = part
-      else
-        result = result .. sep .. part
-      end
-    end
-  end
-  return result
-end
-
-function wrap(s, char)
-  char = char or "'"
-  return char .. s .. char
-end
--- Wraps given string into 'string' and escapes any 's in it
-function escape_and_wrap(s, char, replacement)
-  char = char or "'"
-  replacement = replacement or "\\" .. char
-  return wrap(string.gsub(s, char, replacement), char)
-end
--- Escapes single quotes in a string and wraps the input in single quotes
-function escape_single_bash(s)
-  return escape_and_wrap(s, "'", "'\\''")
-end
-
--- Returns (a .. b) if b is not empty or nil
-function joined_or_nil(a, b)
-  return not isempty(b) and (a .. b) or nil
-end
-
--- Put items from one table into another
-function extend_table(target, source)
-  for i, v in pairs(source) do
-    table.insert(target, v)
-  end
-end
-
--- Creates a handle and filename for a temporary random file (in current directory)
-function create_temporary_file(base, mode, suffix)
-  local handle, filename
-  suffix = suffix or ""
-  while true do
-    filename = base .. tostring(math.random(1, 5000)) .. suffix
-    handle = io.open(filename, "r")
-    if not handle then
-      handle = io.open(filename, mode)
-      break
-    end
-    io.close(handle)
-  end
-  return handle, filename
-end
-
-
-function get_processor_count()
-  local proc_count
-
-  if ON_WINDOWS then
-    proc_count = tonumber(os.getenv("NUMBER_OF_PROCESSORS"))
-  else
-    local cpuinfo_handle = io.open("/proc/cpuinfo")
-    if cpuinfo_handle ~= nil then
-      local cpuinfo_contents = cpuinfo_handle:read("*a")
-      local _, replace_count = cpuinfo_contents:gsub('processor', '')
-      proc_count = replace_count
-    end
-  end
-
-  if proc_count and proc_count > 0 then
-      return proc_count
-  else
-    return nil
-  end
-end
-
-function substitute_values(string, values)
-  local substitutor = function(match)
-    if match == "%" then
-       return "%"
-    else
-      -- nil is discarded by gsub
-      return values[match]
-    end
-  end
-
-  local substituted = string:gsub('%%(.)', substitutor)
-  return substituted
-end
-
--- ASS HELPERS --
-function round_rect_top( ass, x0, y0, x1, y1, r )
-  local c = 0.551915024494 * r -- circle approximation
-  ass:move_to(x0 + r, y0)
-  ass:line_to(x1 - r, y0) -- top line
-  if r > 0 then
-      ass:bezier_curve(x1 - r + c, y0, x1, y0 + r - c, x1, y0 + r) -- top right corner
-  end
-  ass:line_to(x1, y1) -- right line
-  ass:line_to(x0, y1) -- bottom line
-  ass:line_to(x0, y0 + r) -- left line
-  if r > 0 then
-      ass:bezier_curve(x0, y0 + r - c, x0 + r - c, y0, x0 + r, y0) -- top left corner
-  end
-end
-
-function round_rect(ass, x0, y0, x1, y1, rtl, rtr, rbr, rbl)
-    local c = 0.551915024494
-    ass:move_to(x0 + rtl, y0)
-    ass:line_to(x1 - rtr, y0) -- top line
-    if rtr > 0 then
-        ass:bezier_curve(x1 - rtr + rtr*c, y0, x1, y0 + rtr - rtr*c, x1, y0 + rtr) -- top right corner
-    end
-    ass:line_to(x1, y1 - rbr) -- right line
-    if rbr > 0 then
-        ass:bezier_curve(x1, y1 - rbr + rbr*c, x1 - rbr + rbr*c, y1, x1 - rbr, y1) -- bottom right corner
-    end
-    ass:line_to(x0 + rbl, y1) -- bottom line
-    if rbl > 0 then
-        ass:bezier_curve(x0 + rbl - rbl*c, y1, x0, y1 - rbl + rbl*c, x0, y1 - rbl) -- bottom left corner
-    end
-    ass:line_to(x0, y0 + rtl) -- left line
-    if rtl > 0 then
-        ass:bezier_curve(x0, y0 + rtl - rtl*c, x0 + rtl - rtl*c, y0, x0 + rtl, y0) -- top left corner
-    end
-end
--- $Revision: 1.5 $
--- $Date: 2014-09-10 16:54:25 $
-
--- This module was originally taken from http://cube3d.de/uploads/Main/sha1.txt.
-
--------------------------------------------------------------------------------
--- SHA-1 secure hash computation, and HMAC-SHA1 signature computation,
--- in pure Lua (tested on Lua 5.1)
--- License: MIT
---
--- Usage:
--- local hashAsHex = sha1.hex(message) -- returns a hex string
--- local hashAsData = sha1.bin(message) -- returns raw bytes
---
--- local hmacAsHex = sha1.hmacHex(key, message) -- hex string
--- local hmacAsData = sha1.hmacBin(key, message) -- raw bytes
---
---
--- Pass sha1.hex() a string, and it returns a hash as a 40-character hex string.
--- For example, the call
---
--- local hash = sha1.hex("iNTERFACEWARE")
---
--- puts the 40-character string
---
--- "e76705ffb88a291a0d2f9710a5471936791b4819"
---
--- into the variable 'hash'
---
--- Pass sha1.hmacHex() a key and a message, and it returns the signature as a
--- 40-byte hex string.
---
---
--- The two "bin" versions do the same, but return the 20-byte string of raw
--- data that the 40-byte hex strings represent.
---
--------------------------------------------------------------------------------
---
--- Description
--- Due to the lack of bitwise operations in 5.1, this version uses numbers to
--- represents the 32bit words that we combine with binary operations. The basic
--- operations of byte based "xor", "or", "and" are all cached in a combination
--- table (several 64k large tables are built on startup, which
--- consumes some memory and time). The caching can be switched off through
--- setting the local cfg_caching variable to false.
--- For all binary operations, the 32 bit numbers are split into 8 bit values
--- that are combined and then merged again.
---
--- Algorithm: http://www.itl.nist.gov/fipspubs/fip180-1.htm
---
--------------------------------------------------------------------------------
-
-local sha1 = (function()
-local sha1 = {}
-
--- set this to false if you don't want to build several 64k sized tables when
--- loading this file (takes a while but grants a boost of factor 13)
-local cfg_caching = false
--- local storing of global functions (minor speedup)
-local floor,modf = math.floor,math.modf
-local char,format,rep = string.char,string.format,string.rep
-
--- merge 4 bytes to an 32 bit word
-local function bytes_to_w32 (a,b,c,d) return a*0x1000000+b*0x10000+c*0x100+d end
--- split a 32 bit word into four 8 bit numbers
-local function w32_to_bytes (i)
-   return floor(i/0x1000000)%0x100,floor(i/0x10000)%0x100,floor(i/0x100)%0x100,i%0x100
-end
-
--- shift the bits of a 32 bit word. Don't use negative values for "bits"
-local function w32_rot (bits,a)
-   local b2 = 2^(32-bits)
-   local a,b = modf(a/b2)
-   return a+b*b2*(2^(bits))
-end
-
--- caching function for functions that accept 2 arguments, both of values between
--- 0 and 255. The function to be cached is passed, all values are calculated
--- during loading and a function is returned that returns the cached values (only)
-local function cache2arg (fn)
-   if not cfg_caching then return fn end
-   local lut = {}
-   for i=0,0xffff do
-      local a,b = floor(i/0x100),i%0x100
-      lut[i] = fn(a,b)
-   end
-   return function (a,b)
-      return lut[a*0x100+b]
-   end
-end
-
--- splits an 8-bit number into 8 bits, returning all 8 bits as booleans
-local function byte_to_bits (b)
-   local b = function (n)
-      local b = floor(b/n)
-      return b%2==1
-   end
-   return b(1),b(2),b(4),b(8),b(16),b(32),b(64),b(128)
-end
-
--- builds an 8bit number from 8 booleans
-local function bits_to_byte (a,b,c,d,e,f,g,h)
-   local function n(b,x) return b and x or 0 end
-   return n(a,1)+n(b,2)+n(c,4)+n(d,8)+n(e,16)+n(f,32)+n(g,64)+n(h,128)
-end
-
--- debug function for visualizing bits in a string
-local function bits_to_string (a,b,c,d,e,f,g,h)
-   local function x(b) return b and "1" or "0" end
-   return ("%s%s%s%s %s%s%s%s"):format(x(a),x(b),x(c),x(d),x(e),x(f),x(g),x(h))
-end
-
--- debug function for converting a 8-bit number as bit string
-local function byte_to_bit_string (b)
-   return bits_to_string(byte_to_bits(b))
-end
-
--- debug function for converting a 32 bit number as bit string
-local function w32_to_bit_string(a)
-   if type(a) == "string" then return a end
-   local aa,ab,ac,ad = w32_to_bytes(a)
-   local s = byte_to_bit_string
-   return ("%s %s %s %s"):format(s(aa):reverse(),s(ab):reverse(),s(ac):reverse(),s(ad):reverse()):reverse()
-end
-
--- bitwise "and" function for 2 8bit number
-local band = cache2arg (function(a,b)
-      local A,B,C,D,E,F,G,H = byte_to_bits(b)
-      local a,b,c,d,e,f,g,h = byte_to_bits(a)
-      return bits_to_byte(
-         A and a, B and b, C and c, D and d,
-         E and e, F and f, G and g, H and h)
-   end)
-
--- bitwise "or" function for 2 8bit numbers
-local bor = cache2arg(function(a,b)
-      local A,B,C,D,E,F,G,H = byte_to_bits(b)
-      local a,b,c,d,e,f,g,h = byte_to_bits(a)
-      return bits_to_byte(
-         A or a, B or b, C or c, D or d,
-         E or e, F or f, G or g, H or h)
-   end)
-
--- bitwise "xor" function for 2 8bit numbers
-local bxor = cache2arg(function(a,b)
-      local A,B,C,D,E,F,G,H = byte_to_bits(b)
-      local a,b,c,d,e,f,g,h = byte_to_bits(a)
-      return bits_to_byte(
-         A ~= a, B ~= b, C ~= c, D ~= d,
-         E ~= e, F ~= f, G ~= g, H ~= h)
-   end)
-
--- bitwise complement for one 8bit number
-local function bnot (x)
-   return 255-(x % 256)
-end
-
--- creates a function to combine to 32bit numbers using an 8bit combination function
-local function w32_comb(fn)
-   return function (a,b)
-      local aa,ab,ac,ad = w32_to_bytes(a)
-      local ba,bb,bc,bd = w32_to_bytes(b)
-      return bytes_to_w32(fn(aa,ba),fn(ab,bb),fn(ac,bc),fn(ad,bd))
-   end
-end
-
--- create functions for and, xor and or, all for 2 32bit numbers
-local w32_and = w32_comb(band)
-local w32_xor = w32_comb(bxor)
-local w32_or = w32_comb(bor)
-
--- xor function that may receive a variable number of arguments
-local function w32_xor_n (a,...)
-   local aa,ab,ac,ad = w32_to_bytes(a)
-   for i=1,select('#',...) do
-      local ba,bb,bc,bd = w32_to_bytes(select(i,...))
-      aa,ab,ac,ad = bxor(aa,ba),bxor(ab,bb),bxor(ac,bc),bxor(ad,bd)
-   end
-   return bytes_to_w32(aa,ab,ac,ad)
-end
-
--- combining 3 32bit numbers through binary "or" operation
-local function w32_or3 (a,b,c)
-   local aa,ab,ac,ad = w32_to_bytes(a)
-   local ba,bb,bc,bd = w32_to_bytes(b)
-   local ca,cb,cc,cd = w32_to_bytes(c)
-   return bytes_to_w32(
-      bor(aa,bor(ba,ca)), bor(ab,bor(bb,cb)), bor(ac,bor(bc,cc)), bor(ad,bor(bd,cd))
-   )
-end
-
--- binary complement for 32bit numbers
-local function w32_not (a)
-   return 4294967295-(a % 4294967296)
-end
-
--- adding 2 32bit numbers, cutting off the remainder on 33th bit
-local function w32_add (a,b) return (a+b) % 4294967296 end
-
--- adding n 32bit numbers, cutting off the remainder (again)
-local function w32_add_n (a,...)
-   for i=1,select('#',...) do
-      a = (a+select(i,...)) % 4294967296
-   end
-   return a
-end
--- converting the number to a hexadecimal string
-local function w32_to_hexstring (w) return format("%08x",w) end
-
--- calculating the SHA1 for some text
-function sha1.hex(msg)
-   local H0,H1,H2,H3,H4 = 0x67452301,0xEFCDAB89,0x98BADCFE,0x10325476,0xC3D2E1F0
-   local msg_len_in_bits = #msg * 8
-
-   local first_append = char(0x80) -- append a '1' bit plus seven '0' bits
-
-   local non_zero_message_bytes = #msg +1 +8 -- the +1 is the appended bit 1, the +8 are for the final appended length
-   local current_mod = non_zero_message_bytes % 64
-   local second_append = current_mod>0 and rep(char(0), 64 - current_mod) or ""
-
-   -- now to append the length as a 64-bit number.
-   local B1, R1 = modf(msg_len_in_bits / 0x01000000)
-   local B2, R2 = modf( 0x01000000 * R1 / 0x00010000)
-   local B3, R3 = modf( 0x00010000 * R2 / 0x00000100)
-   local B4 = 0x00000100 * R3
-
-   local L64 = char( 0) .. char( 0) .. char( 0) .. char( 0) -- high 32 bits
-   .. char(B1) .. char(B2) .. char(B3) .. char(B4) -- low 32 bits
-
-   msg = msg .. first_append .. second_append .. L64
-
-   assert(#msg % 64 == 0)
-
-   local chunks = #msg / 64
-
-   local W = { }
-   local start, A, B, C, D, E, f, K, TEMP
-   local chunk = 0
-
-   while chunk < chunks do
-      --
-      -- break chunk up into W[0] through W[15]
-      --
-      start,chunk = chunk * 64 + 1,chunk + 1
-
-      for t = 0, 15 do
-         W[t] = bytes_to_w32(msg:byte(start, start + 3))
-         start = start + 4
-      end
-
-      --
-      -- build W[16] through W[79]
-      --
-      for t = 16, 79 do
-         -- For t = 16 to 79 let Wt = S1(Wt-3 XOR Wt-8 XOR Wt-14 XOR Wt-16).
-         W[t] = w32_rot(1, w32_xor_n(W[t-3], W[t-8], W[t-14], W[t-16]))
-      end
-
-      A,B,C,D,E = H0,H1,H2,H3,H4
-
-      for t = 0, 79 do
-         if t <= 19 then
-            -- (B AND C) OR ((NOT B) AND D)
-            f = w32_or(w32_and(B, C), w32_and(w32_not(B), D))
-            K = 0x5A827999
-         elseif t <= 39 then
-            -- B XOR C XOR D
-            f = w32_xor_n(B, C, D)
-            K = 0x6ED9EBA1
-         elseif t <= 59 then
-            -- (B AND C) OR (B AND D) OR (C AND D
-            f = w32_or3(w32_and(B, C), w32_and(B, D), w32_and(C, D))
-            K = 0x8F1BBCDC
-         else
-            -- B XOR C XOR D
-            f = w32_xor_n(B, C, D)
-            K = 0xCA62C1D6
-         end
-
-         -- TEMP = S5(A) + ft(B,C,D) + E + Wt + Kt;
-         A,B,C,D,E = w32_add_n(w32_rot(5, A), f, E, W[t], K),
-         A, w32_rot(30, B), C, D
-      end
-      -- Let H0 = H0 + A, H1 = H1 + B, H2 = H2 + C, H3 = H3 + D, H4 = H4 + E.
-      H0,H1,H2,H3,H4 = w32_add(H0, A),w32_add(H1, B),w32_add(H2, C),w32_add(H3, D),w32_add(H4, E)
-   end
-   local f = w32_to_hexstring
-   return f(H0) .. f(H1) .. f(H2) .. f(H3) .. f(H4)
-end
-
-local function hex_to_binary(hex)
-   return hex:gsub('..', function(hexval)
-         return string.char(tonumber(hexval, 16))
-      end)
-end
-
-function sha1.bin(msg)
-   return hex_to_binary(sha1.hex(msg))
-end
-
-local xor_with_0x5c = {}
-local xor_with_0x36 = {}
--- building the lookuptables ahead of time (instead of littering the source code
--- with precalculated values)
-for i=0,0xff do
-   xor_with_0x5c[char(i)] = char(bxor(i,0x5c))
-   xor_with_0x36[char(i)] = char(bxor(i,0x36))
-end
-
-local blocksize = 64 -- 512 bits
-
-function sha1.hmacHex(key, text)
-   assert(type(key) == 'string', "key passed to hmacHex should be a string")
-   assert(type(text) == 'string', "text passed to hmacHex should be a string")
-
-   if #key > blocksize then
-      key = sha1.bin(key)
-   end
-
-   local key_xord_with_0x36 = key:gsub('.', xor_with_0x36) .. string.rep(string.char(0x36), blocksize - #key)
-   local key_xord_with_0x5c = key:gsub('.', xor_with_0x5c) .. string.rep(string.char(0x5c), blocksize - #key)
-
-   return sha1.hex(key_xord_with_0x5c .. sha1.bin(key_xord_with_0x36 .. text))
-end
-
-function sha1.hmacBin(key, text)
-   return hex_to_binary(sha1.hmacHex(key, text))
-end
-
-return sha1
-end)()
-
-local SCRIPT_NAME = "mpv_thumbnail_script"
-
-local default_cache_base = ON_WINDOWS and os.getenv("TEMP") or "/tmp/"
-
-local thumbnailer_options = {
-    -- The thumbnail directory
-    cache_directory = join_paths(default_cache_base, "mpv_thumbs_cache"),
-
-    ------------------------
-    -- Generation options --
-    ------------------------
-
-    -- Automatically generate the thumbnails on video load, without a keypress
-    autogenerate = true,
-
-    -- Only automatically thumbnail videos shorter than this (seconds)
-    autogenerate_max_duration = 3600, -- 1 hour
-
-    -- SHA1-sum filenames over this length
-    -- It's nice to know what files the thumbnails are (hence directory names)
-    -- but long URLs may approach filesystem limits.
-    hash_filename_length = 128,
-
-    -- Use mpv to generate thumbnail even if ffmpeg is found in PATH
-    -- ffmpeg does not handle ordered chapters (MKVs which rely on other MKVs)!
-    -- mpv is a bit slower, but has better support overall (eg. subtitles in the previews)
-    prefer_mpv = true,
-
-    -- Explicitly disable subtitles on the mpv sub-calls
-    mpv_no_sub = false,
-    -- Add a "--no-config" to the mpv sub-call arguments
-    mpv_no_config = false,
-    -- Add a "--profile=<mpv_profile>" to the mpv sub-call arguments
-    -- Use "" to disable
-    mpv_profile = "",
-    -- Output debug logs to <thumbnail_path>.log, ala <cache_directory>/<video_filename>/000000.bgra.log
-    -- The logs are removed after successful encodes, unless you set mpv_keep_logs below
-    mpv_logs = true,
-    -- Keep all mpv logs, even the succesfull ones
-    mpv_keep_logs = false,
-
-    -- Disable the built-in keybind ("T") to add your own
-    disable_keybinds = false,
-
-    ---------------------
-    -- Display options --
-    ---------------------
-
-    -- Move the thumbnail up or down
-    -- For example:
-    --   topbar/bottombar: 24
-    --   rest: 0
-    vertical_offset = 24,
-
-    -- Adjust background padding
-    -- Examples:
-    --   topbar:       0, 10, 10, 10
-    --   bottombar:   10,  0, 10, 10
-    --   slimbox/box: 10, 10, 10, 10
-    pad_top   = 10,
-    pad_bot   =  0,
-    pad_left  = 10,
-    pad_right = 10,
-
-    -- If true, pad values are screen-pixels. If false, video-pixels.
-    pad_in_screenspace = true,
-    -- Calculate pad into the offset
-    offset_by_pad = true,
-
-    -- Background color in BBGGRR
-    background_color = "000000",
-    -- Alpha: 0 - fully opaque, 255 - transparent
-    background_alpha = 80,
-
-    -- Keep thumbnail on the screen near left or right side
-    constrain_to_screen = true,
-
-    -- Do not display the thumbnailing progress
-    hide_progress = false,
-
-    -----------------------
-    -- Thumbnail options --
-    -----------------------
-
-    -- The maximum dimensions of the thumbnails (pixels)
-    thumbnail_width = 200,
-    thumbnail_height = 200,
-
-    -- The thumbnail count target
-    -- (This will result in a thumbnail every ~10 seconds for a 25 minute video)
-    thumbnail_count = 150,
-
-    -- The above target count will be adjusted by the minimum and
-    -- maximum time difference between thumbnails.
-    -- The thumbnail_count will be used to calculate a target separation,
-    -- and min/max_delta will be used to constrict it.
-
-    -- In other words, thumbnails will be:
-    --   at least min_delta seconds apart (limiting the amount)
-    --   at most max_delta seconds apart (raising the amount if needed)
-    min_delta = 5,
-    -- 120 seconds aka 2 minutes will add more thumbnails when the video is over 5 hours!
-    max_delta = 90,
-
-
-    -- Overrides for remote urls (you generally want less thumbnails!)
-    -- Thumbnailing network paths will be done with mpv
-
-    -- Allow thumbnailing network paths (naive check for "://")
-    thumbnail_network = false,
-    -- Override thumbnail count, min/max delta
-    remote_thumbnail_count = 60,
-    remote_min_delta = 15,
-    remote_max_delta = 120,
-
-    -- Try to grab the raw stream and disable ytdl for the mpv subcalls
-    -- Much faster than passing the url to ytdl again, but may cause problems with some sites
-    remote_direct_stream = true,
-}
-
-read_options(thumbnailer_options, SCRIPT_NAME)
-local Thumbnailer = {
-    cache_directory = thumbnailer_options.cache_directory,
-
-    state = {
-        ready = false,
-        available = false,
-        enabled = false,
-
-        thumbnail_template = nil,
-
-        thumbnail_delta = nil,
-        thumbnail_count = 0,
-
-        thumbnail_size = nil,
-
-        finished_thumbnails = 0,
-
-        -- List of thumbnail states (from 1 to thumbnail_count)
-        -- ready: 1
-        -- in progress: 0
-        -- not ready: -1
-        thumbnails = {},
-
-        worker_input_path = nil,
-        -- Extra options for the workers
-        worker_extra = {},
-    },
-    -- Set in register_client
-    worker_register_timeout = nil,
-    -- A timer used to wait for more workers in case we have none
-    worker_wait_timer = nil,
-    workers = {}
-}
-
-function Thumbnailer:clear_state()
-    clear_table(self.state)
-    self.state.ready = false
-    self.state.available = false
-    self.state.finished_thumbnails = 0
-    self.state.thumbnails = {}
-    self.state.worker_extra = {}
-end
-
-
-function Thumbnailer:on_file_loaded()
-    self:clear_state()
-end
-
-function Thumbnailer:on_thumb_ready(index)
-    self.state.thumbnails[index] = 1
-
-    -- Full recount instead of a naive increment (let's be safe!)
-    self.state.finished_thumbnails = 0
-    for i, v in pairs(self.state.thumbnails) do
-        if v > 0 then
-            self.state.finished_thumbnails = self.state.finished_thumbnails + 1
-        end
-    end
-end
-
-function Thumbnailer:on_thumb_progress(index)
-    self.state.thumbnails[index] = math.max(self.state.thumbnails[index], 0)
-end
-
-function Thumbnailer:on_start_file()
-    -- Clear state when a new file is being loaded
-    self:clear_state()
-end
-
-function Thumbnailer:on_video_change(params)
-    -- Gather a new state when we get proper video-dec-params and our state is empty
-    if params ~= nil then
-        if not self.state.ready then
-            self:update_state()
-        end
-    end
-end
-
-
-function Thumbnailer:update_state()
-    msg.debug("Gathering video/thumbnail state")
-
-    self.state.thumbnail_delta = self:get_delta()
-    self.state.thumbnail_count = self:get_thumbnail_count(self.state.thumbnail_delta)
-
-    -- Prefill individual thumbnail states
-    for i = 1, self.state.thumbnail_count do
-        self.state.thumbnails[i] = -1
-    end
-
-    self.state.thumbnail_template, self.state.thumbnail_directory = self:get_thumbnail_template()
-    self.state.thumbnail_size = self:get_thumbnail_size()
-
-    self.state.ready = true
-
-    local file_path = mp.get_property_native("path")
-    self.state.is_remote = file_path:find("://") ~= nil
-
-    self.state.available = false
-
-    -- Make sure the file has video (and not just albumart)
-    local track_list = mp.get_property_native("track-list")
-    local has_video = false
-    for i, track in pairs(track_list) do
-        if track.type == "video" and not track.external and not track.albumart then
-            has_video = true
-            break
-        end
-    end
-
-    if has_video and self.state.thumbnail_delta ~= nil and self.state.thumbnail_size ~= nil and self.state.thumbnail_count > 0 then
-        self.state.available = true
-    end
-
-    msg.debug("Thumbnailer.state:", utils.to_string(self.state))
-
-end
-
-
-function Thumbnailer:get_thumbnail_template()
-    local file_path = mp.get_property_native("path")
-    local is_remote = file_path:find("://") ~= nil
-
-    local filename = mp.get_property_native("filename/no-ext")
-    local filesize = mp.get_property_native("file-size", 0)
-
-    if is_remote then
-        filesize = 0
-    end
-
-    filename = filename:gsub('[^a-zA-Z0-9_.%-\' ]', '')
-    -- Hash overly long filenames (most likely URLs)
-    if #filename > thumbnailer_options.hash_filename_length then
-        filename = sha1.hex(filename)
-    end
-
-    local file_key = ("%s-%d"):format(filename, filesize)
-
-    local thumbnail_directory = join_paths(self.cache_directory, file_key)
-    local file_template = join_paths(thumbnail_directory, "%06d.bgra")
-    return file_template, thumbnail_directory
-end
-
-
-function Thumbnailer:get_thumbnail_size()
-    local video_dec_params = mp.get_property_native("video-dec-params")
-    local video_width = video_dec_params.dw
-    local video_height = video_dec_params.dh
-    if not (video_width and video_height) then
-        return nil
-    end
-
-    local w, h
-    if video_width > video_height then
-        w = thumbnailer_options.thumbnail_width
-        h = math.floor(video_height * (w / video_width))
-    else
-        h = thumbnailer_options.thumbnail_height
-        w = math.floor(video_width * (h / video_height))
-    end
-    return { w=w, h=h }
-end
-
-
-function Thumbnailer:get_delta()
-    local file_path = mp.get_property_native("path")
-    local file_duration = mp.get_property_native("duration")
-    local is_seekable = mp.get_property_native("seekable")
-
-    -- Naive url check
-    local is_remote = file_path:find("://") ~= nil
-
-    local remote_and_disallowed = is_remote
-    if is_remote and thumbnailer_options.thumbnail_network then
-        remote_and_disallowed = false
-    end
-
-    if remote_and_disallowed or not is_seekable or not file_duration then
-        -- Not a local path (or remote thumbnails allowed), not seekable or lacks duration
-        return nil
-    end
-
-    local thumbnail_count = thumbnailer_options.thumbnail_count
-    local min_delta = thumbnailer_options.min_delta
-    local max_delta = thumbnailer_options.max_delta
-
-    if is_remote then
-        thumbnail_count = thumbnailer_options.remote_thumbnail_count
-        min_delta = thumbnailer_options.remote_min_delta
-        max_delta = thumbnailer_options.remote_max_delta
-    end
-
-    local target_delta = (file_duration / thumbnail_count)
-    local delta = math.max(min_delta, math.min(max_delta, target_delta))
-
-    return delta
-end
-
-
-function Thumbnailer:get_thumbnail_count(delta)
-    if delta == nil then
-        return 0
-    end
-    local file_duration = mp.get_property_native("duration")
-
-    return math.ceil(file_duration / delta)
-end
-
-function Thumbnailer:get_closest(thumbnail_index)
-    -- Given a 1-based index, find the closest available thumbnail and return it's 1-based index
-
-    -- Check the direct thumbnail index first
-    if self.state.thumbnails[thumbnail_index] > 0 then
-        return thumbnail_index
-    end
-
-    local min_distance = self.state.thumbnail_count + 1
-    local closest = nil
-
-    -- Naive, inefficient, lazy. But functional.
-    for index, value in pairs(self.state.thumbnails) do
-        local distance = math.abs(index - thumbnail_index)
-        if distance < min_distance and value > 0 then
-            min_distance = distance
-            closest = index
-        end
-    end
-    return closest
-end
-
-function Thumbnailer:get_thumbnail_index(time_position)
-    -- Returns a 1-based thumbnail index for the given timestamp (between 1 and thumbnail_count, inclusive)
-    if self.state.thumbnail_delta and (self.state.thumbnail_count and self.state.thumbnail_count > 0) then
-        return math.min(math.floor(time_position / self.state.thumbnail_delta) + 1, self.state.thumbnail_count)
-    else
-        return nil
-    end
-end
-
-function Thumbnailer:get_thumbnail_path(time_position)
-    -- Given a timestamp, return:
-    --   the closest available thumbnail path (if any)
-    --   the 1-based thumbnail index calculated from the timestamp
-    --   the 1-based thumbnail index of the closest available (and used) thumbnail
-    -- OR nil if thumbnails are not available.
-
-    local thumbnail_index = self:get_thumbnail_index(time_position)
-    if not thumbnail_index then return nil end
-
-    local closest = self:get_closest(thumbnail_index)
-
-    if closest ~= nil then
-        return self.state.thumbnail_template:format(closest-1), thumbnail_index, closest
-    else
-        return nil, thumbnail_index, nil
-    end
-end
-
-function Thumbnailer:register_client()
-    self.worker_register_timeout = mp.get_time() + 2
-
-    mp.register_script_message("mpv_thumbnail_script-ready", function(index, path)
-        self:on_thumb_ready(tonumber(index), path)
-    end)
-    mp.register_script_message("mpv_thumbnail_script-progress", function(index, path)
-        self:on_thumb_progress(tonumber(index), path)
-    end)
-
-    mp.register_script_message("mpv_thumbnail_script-worker", function(worker_name)
-        if not self.workers[worker_name] then
-            msg.debug("Registered worker", worker_name)
-            self.workers[worker_name] = true
-            mp.commandv("script-message-to", worker_name, "mpv_thumbnail_script-slaved")
-        end
-    end)
-
-    -- Notify workers to generate thumbnails when video loads/changes
-    -- This will be executed after the on_video_change (because it's registered after it)
-    mp.observe_property("video-dec-params", "native", function()
-        local duration = mp.get_property_native("duration")
-        local max_duration = thumbnailer_options.autogenerate_max_duration
-
-        if duration ~= nil and self.state.available and thumbnailer_options.autogenerate then
-            -- Notify if autogenerate is on and video is not too long
-            if duration < max_duration or max_duration == 0 then
-                self:start_worker_jobs()
-            end
-        end
-    end)
-
-    local thumb_script_key = not thumbnailer_options.disable_keybinds and "T" or nil
-    mp.add_key_binding(thumb_script_key, "generate-thumbnails", function()
-        if self.state.available then
-            mp.osd_message("Started thumbnailer jobs")
-            self:start_worker_jobs()
-        else
-            mp.osd_message("Thumbnailing unavailabe")
-        end
-    end)
-end
-
-function Thumbnailer:_create_thumbnail_job_order()
-    -- Returns a list of 1-based thumbnail indices in a job order
-    local used_frames = {}
-    local work_frames = {}
-
-    -- Pick frames in increasing frequency.
-    -- This way we can do a quick few passes over the video and then fill in the gaps.
-    for x = 6, 0, -1 do
-        local nth = (2^x)
-
-        for thi = 1, self.state.thumbnail_count, nth do
-            if not used_frames[thi] then
-                table.insert(work_frames, thi)
-                used_frames[thi] = true
-            end
-        end
-    end
-    return work_frames
-end
-
-function Thumbnailer:prepare_source_path()
-    local file_path = mp.get_property_native("path")
-
-    if self.state.is_remote and thumbnailer_options.remote_direct_stream then
-        -- Use the direct stream (possibly) provided by ytdl
-        -- This skips ytdl on the sub-calls, making the thumbnailing faster
-        -- Works well on YouTube, rest not really tested
-        file_path = mp.get_property_native("stream-path")
-
-        -- edl:// urls can get LONG. In which case, save the path (URL)
-        -- to a temporary file and use that instead.
-        local playlist_filename = join_paths(self.state.thumbnail_directory, "playlist.txt")
-
-        if #file_path > 8000 then
-            -- Path is too long for a playlist - just pass the original URL to
-            -- workers and allow ytdl
-            self.state.worker_extra.enable_ytdl = true
-            file_path = mp.get_property_native("path")
-            msg.warn("Falling back to original URL and ytdl due to LONG source path. This will be slow.")
-
-        elseif #file_path > 1024 then
-            local playlist_file = io.open(playlist_filename, "wb")
-            if not playlist_file then
-                msg.error(("Tried to write a playlist to %s but couldn't!"):format(playlist_file))
-                return false
-            end
-
-            playlist_file:write(file_path .. "\n")
-            playlist_file:close()
-
-            file_path = "--playlist=" .. playlist_filename
-            msg.warn("Using playlist workaround due to long source path")
-        end
-    end
-
-    self.state.worker_input_path = file_path
-    return true
-end
-
-function Thumbnailer:start_worker_jobs()
-    -- Create directory for the thumbnails, if needed
-    local l, err = utils.readdir(self.state.thumbnail_directory)
-    if err then
-        msg.debug("Creating thumbnail directory", self.state.thumbnail_directory)
-        create_directories(self.state.thumbnail_directory)
-    end
-
-    -- Try to prepare the source path for workers, and bail if unable to do so
-    if not self:prepare_source_path() then
-        return
-    end
-
-    local worker_list = {}
-    for worker_name in pairs(self.workers) do table.insert(worker_list, worker_name) end
-
-    local worker_count = #worker_list
-
-    -- In case we have a worker timer created already, clear it
-    -- (For example, if the video-dec-params change in quick succession or the user pressed T, etc)
-    if self.worker_wait_timer then
-        self.worker_wait_timer:stop()
-    end
-
-    if worker_count == 0 then
-        local now = mp.get_time()
-        if mp.get_time() > self.worker_register_timeout then
-            -- Workers have had their time to register but we have none!
-            local err = "No thumbnail workers found. Make sure you are not missing a script!"
-            msg.error(err)
-            mp.osd_message(err, 3)
-
-        else
-            -- We may be too early. Delay the work start a bit to try again.
-            msg.warn("No workers found. Waiting a bit more for them.")
-            -- Wait at least half a second
-            local wait_time = math.max(self.worker_register_timeout - now, 0.5)
-            self.worker_wait_timer = mp.add_timeout(wait_time, function() self:start_worker_jobs() end)
-        end
-
-    else
-        -- We have at least one worker. This may not be all of them, but they have had
-        -- their time to register; we've done our best waiting for them.
-        self.state.enabled = true
-
-        msg.debug( ("Splitting %d thumbnails amongst %d worker(s)"):format(self.state.thumbnail_count, worker_count) )
-
-        local frame_job_order = self:_create_thumbnail_job_order()
-        local worker_jobs = {}
-        for i = 1, worker_count do worker_jobs[worker_list[i]] = {} end
-
-        -- Split frames amongst the workers
-        for i, thumbnail_index in ipairs(frame_job_order) do
-            local worker_id = worker_list[ ((i-1) % worker_count) + 1 ]
-            table.insert(worker_jobs[worker_id], thumbnail_index)
-        end
-
-        local state_json_string = utils.format_json(self.state)
-        msg.debug("Giving workers state:", state_json_string)
-
-        for worker_name, worker_frames in pairs(worker_jobs) do
-            if #worker_frames > 0 then
-                local frames_json_string = utils.format_json(worker_frames)
-                msg.debug("Assigning job to", worker_name, frames_json_string)
-                mp.commandv("script-message-to", worker_name, "mpv_thumbnail_script-job", state_json_string, frames_json_string)
-            end
-        end
-    end
-end
-
-mp.register_event("start-file", function() Thumbnailer:on_start_file() end)
-mp.observe_property("video-dec-params", "native", function(name, params) Thumbnailer:on_video_change(params) end)
 local assdraw = require 'mp.assdraw'
 local msg = require 'mp.msg'
 local opt = require 'mp.options'
@@ -1238,6 +11,7 @@ local utils = require 'mp.utils'
 local user_opts = {
     showwindowed = true,        -- show OSC when windowed?
     showfullscreen = true,      -- show OSC when fullscreen?
+    idlescreen = true,          -- show mpv logo on idle
     scalewindowed = 1,          -- scaling of the controller when windowed
     scalefullscreen = 1,        -- scaling of the controller when fullscreen
     scaleforcedwindow = 2,      -- scaling when rendered on a forced window
@@ -1261,7 +35,7 @@ local user_opts = {
     seekbarstyle = "bar",       -- bar, diamond or knob
     seekbarhandlesize = 0.6,    -- size ratio of the diamond and knob handle
     seekrangestyle = "inverted",-- bar, line, slider, inverted or none
-    seekrangeseparate = true,   -- wether the seekranges overlay on the bar-style seekbar
+    seekrangeseparate = true,   -- whether the seekranges overlay on the bar-style seekbar
     seekrangealpha = 200,       -- transparency of seekranges
     seekbarkeyframes = true,    -- use keyframes when dragging the seekbar
     title = "${media-title}",   -- string compatible with property-expansion
@@ -1269,243 +43,22 @@ local user_opts = {
     tooltipborder = 1,          -- border of tooltip in bottom/topbar
     timetotal = false,          -- display total time instead of remaining time?
     timems = false,             -- display timecodes with milliseconds?
+    tcspace = 100,              -- timecode spacing (compensate font size estimation)
     visibility = "auto",        -- only used at init to set visibility_mode(...)
     boxmaxchars = 80,           -- title crop threshold for box layout
     boxvideo = false,           -- apply osc_param.video_margins to video
     windowcontrols = "auto",    -- whether to show window controls
     windowcontrols_alignment = "right", -- which side to show window controls on
     greenandgrumpy = false,     -- disable santa hat
+    livemarkers = true,         -- update seekbar chapter markers on duration change
+    chapters_osd = true,        -- whether to show chapters OSD on next/prev
+    playlist_osd = true,        -- whether to show playlist OSD on next/prev
+    chapter_fmt = "Chapter: %s", -- chapter print format for seekbar-hover. "no" to disable
+    unicodeminus = false,       -- whether to use the Unicode minus sign character
 }
 
 -- read options from config and command-line
 opt.read_options(user_opts, "osc", function(list) update_options(list) end)
-
-
--- mpv_thumbnail_script.lua --
-
--- Patch in msg.trace
-if not msg.trace then
-    msg.trace = function(...) return mp.log("trace", ...) end
-end
-
--- Patch in utils.format_bytes_humanized
-if not utils.format_bytes_humanized then
-    utils.format_bytes_humanized = function(b)
-        local d = {"Bytes", "KiB", "MiB", "GiB", "TiB", "PiB"}
-        local i = 1
-        while b >= 1024 do
-            b = b / 1024
-            i = i + 1
-        end
-        return string.format("%0.2f %s", b, d[i] and d[i] or "*1024^" .. (i-1))
-    end
-end
-
-Thumbnailer:register_client()
-
-function get_thumbnail_y_offset(thumb_size, msy)
-    local layout = user_opts.layout
-    local offset = 0
-
-    if layout == "bottombar" then
-        offset = 15 --+ margin
-    elseif layout == "topbar" then
-        offset = -(thumb_size.h * msy + 15)
-    elseif layout == "box" then
-        offset = 15
-    elseif layout == "slimbox" then
-        offset = 12
-    end
-
-    return offset / msy
-end
-
-
-local osc_thumb_state = {
-    visible = false,
-    overlay_id = 1,
-
-    last_path = nil,
-    last_x = nil,
-    last_y = nil,
-}
-
-function hide_thumbnail()
-    osc_thumb_state.visible = false
-    osc_thumb_state.last_path = nil
-    mp.command_native({ "overlay-remove", osc_thumb_state.overlay_id })
-end
-
-function display_thumbnail(pos, value, ass)
-    -- If thumbnails are not available, bail
-    if not (Thumbnailer.state.enabled and Thumbnailer.state.available) then
-        return
-    end
-
-    local duration = mp.get_property_number("duration", nil)
-    if not ((duration == nil) or (value == nil)) then
-        target_position = duration * (value / 100)
-
-        local msx, msy = get_virt_scale_factor()
-        local osd_w, osd_h = mp.get_osd_size()
-
-        local thumb_size = Thumbnailer.state.thumbnail_size
-        local thumb_path, thumb_index, closest_index = Thumbnailer:get_thumbnail_path(target_position)
-
-        local thumbs_ready = Thumbnailer.state.finished_thumbnails
-        local thumbs_total = Thumbnailer.state.thumbnail_count
-        local perc = math.floor((thumbs_ready / thumbs_total) * 100)
-
-        local display_progress = thumbs_ready ~= thumbs_total and not thumbnailer_options.hide_progress
-
-        local vertical_offset = thumbnailer_options.vertical_offset
-        local padding = thumbnailer_options.background_padding
-
-        local pad = {
-            l = thumbnailer_options.pad_left, r = thumbnailer_options.pad_right,
-            t = thumbnailer_options.pad_top, b = thumbnailer_options.pad_bot
-        }
-        if thumbnailer_options.pad_in_screenspace then
-            pad.l = pad.l * msx
-            pad.r = pad.r * msx
-            pad.t = pad.t * msy
-            pad.b = pad.b * msy
-        end
-
-        if thumbnailer_options.offset_by_pad then
-            vertical_offset = vertical_offset + (user_opts.layout == "topbar" and pad.t or pad.b)
-        end
-
-        local ass_w = thumb_size.w * msx
-        local ass_h = thumb_size.h * msy
-        local y_offset = get_thumbnail_y_offset(thumb_size, 1)
-
-        -- Constrain thumbnail display to window
-        -- (ie. don't let it go off-screen left/right)
-        if thumbnailer_options.constrain_to_screen and osd_w > (ass_w + pad.l + pad.r)/msx then
-            local padded_left = (pad.l + (ass_w / 2))
-            local padded_right = (pad.r + (ass_w / 2))
-            if pos.x - padded_left < 0 then
-                pos.x = padded_left
-            elseif pos.x + padded_right > osd_w*msx then
-                pos.x = osd_w*msx - padded_right
-            end
-        end
-
-        local text_h = 30 * msy
-        local bg_h = ass_h + (display_progress and text_h or 0)
-        local bg_left = pos.x - ass_w/2
-        local framegraph_h = 10 * msy
-
-        local bg_top = nil
-        local text_top = nil
-        local framegraph_top = nil
-
-        if user_opts.layout == "topbar" then
-            bg_top = pos.y - ( y_offset + thumb_size.h ) + vertical_offset
-            text_top = bg_top + ass_h + framegraph_h
-            framegraph_top = bg_top + ass_h
-            vertical_offset = -vertical_offset
-        else
-            bg_top = pos.y - y_offset - bg_h - vertical_offset
-            text_top = bg_top
-            framegraph_top = bg_top + 20 * msy
-        end
-
-        if display_progress then
-            if user_opts.layout == "topbar" then
-                pad.b = math.max(0, pad.b - 30)
-            else
-                pad.t = math.max(0, pad.t - 30)
-            end
-        end
-
-
-
-        -- Draw background
-        ass:new_event()
-        ass:pos(bg_left, bg_top)
-        ass:append(("{\\bord0\\1c&H%s&\\1a&H%X&}"):format(thumbnailer_options.background_color, thumbnailer_options.background_alpha))
-        ass:draw_start()
-        ass:rect_cw(-pad.l, -pad.t, ass_w+pad.r, bg_h+pad.b)
-        ass:draw_stop()
-
-        if display_progress then
-
-            ass:new_event()
-            ass:pos(pos.x, text_top)
-            ass:an(8)
-            -- Scale text to correct size
-            ass:append(("{\\fs20\\bord0\\fscx%f\\fscy%f}"):format(100*msx, 100*msy))
-            ass:append(("%d%% - %d/%d"):format(perc, thumbs_ready, thumbs_total))
-
-            -- Draw the generation progress
-            local block_w = thumb_size.w * (Thumbnailer.state.thumbnail_delta / duration) * msy
-            local block_max_x = thumb_size.w * msy
-
-            -- Draw finished thumbnail blocks (white)
-            ass:new_event()
-            ass:pos(bg_left, framegraph_top)
-            ass:append(("{\\bord0\\1c&HFFFFFF&\\1a&H%X&"):format(0))
-            ass:draw_start(2)
-            for i, v in pairs(Thumbnailer.state.thumbnails) do
-                if i ~= closest_index and v > 0 then
-                    ass:rect_cw((i-1)*block_w, 0, math.min(block_max_x, i*block_w), framegraph_h)
-                end
-            end
-            ass:draw_stop()
-
-            -- Draw in-progress thumbnail blocks (grayish green)
-            ass:new_event()
-            ass:pos(bg_left, framegraph_top)
-            ass:append(("{\\bord0\\1c&H44AA44&\\1a&H%X&"):format(0))
-            ass:draw_start(2)
-            for i, v in pairs(Thumbnailer.state.thumbnails) do
-                if i ~= closest_index and v == 0 then
-                    ass:rect_cw((i-1)*block_w, 0, math.min(block_max_x, i*block_w), framegraph_h)
-                end
-            end
-            ass:draw_stop()
-
-            if closest_index ~= nil then
-                ass:new_event()
-                ass:pos(bg_left, framegraph_top)
-                ass:append(("{\\bord0\\1c&H4444FF&\\1a&H%X&"):format(0))
-                ass:draw_start(2)
-                ass:rect_cw((closest_index-1)*block_w, 0, math.min(block_max_x, closest_index*block_w), framegraph_h)
-                ass:draw_stop()
-            end
-        end
-
-        if thumb_path then
-            local overlay_y_offset = get_thumbnail_y_offset(thumb_size, msy)
-
-            local thumb_x = math.floor(pos.x / msx - thumb_size.w/2)
-            local thumb_y = math.floor(pos.y / msy - thumb_size.h - overlay_y_offset - vertical_offset/msy)
-
-            osc_thumb_state.visible = true
-            if not (osc_thumb_state.last_path == thumb_path and osc_thumb_state.last_x == thumb_x and osc_thumb_state.last_y == thumb_y) then
-                local overlay_add_args = {
-                    "overlay-add", osc_thumb_state.overlay_id,
-                    thumb_x, thumb_y,
-                    thumb_path,
-                    0,
-                    "bgra",
-                    thumb_size.w, thumb_size.h,
-                    4 * thumb_size.w
-                }
-                mp.command_native(overlay_add_args)
-
-                osc_thumb_state.last_path = thumb_path
-                osc_thumb_state.last_x = thumb_x
-                osc_thumb_state.last_y = thumb_y
-            end
-        end
-    end
-end
-
--- // mpv_thumbnail_script.lua // --
-
 
 local osc_param = { -- calculated by osc_init()
     playresy = 0,                           -- canvas size Y
@@ -1574,6 +127,13 @@ local state = {
     border = true,
     maximized = false,
     osd = mp.create_osd_overlay("ass-events"),
+    chapter_list = {},                      -- sorted by time
+}
+
+local thumbfast = {
+    width = 0,
+    height = 0,
+    disabled = false
 }
 
 local window_control_box_width = 80
@@ -1584,6 +144,12 @@ local is_december = os.date("*t").month == 12
 --
 -- Helperfunctions
 --
+
+function kill_animation()
+    state.anistart = nil
+    state.animation = nil
+    state.anitype =  nil
+end
 
 function set_osd(res_x, res_y, text)
     if state.osd.res_x == res_x and
@@ -1810,7 +376,7 @@ end
 -- return a nice list of tracks of the given type (video, audio, sub)
 function get_tracklist(type)
     local msg = "Available " .. nicetypes[type] .. " Tracks: "
-    if #tracks_osc[type] == 0 then
+    if not tracks_osc or #tracks_osc[type] == 0 then
         msg = msg .. "none"
     else
         for n = 1, #tracks_osc[type] do
@@ -2046,7 +612,34 @@ end
 -- Element Rendering
 --
 
+-- returns nil or a chapter element from the native property chapter-list
+function get_chapter(possec)
+    local cl = state.chapter_list  -- sorted, get latest before possec, if any
+
+    for n=#cl,1,-1 do
+        if possec >= cl[n].time then
+            return cl[n]
+        end
+    end
+end
+
 function render_elements(master_ass)
+
+    -- when the slider is dragged or hovered and we have a target chapter name
+    -- then we use it instead of the normal title. we calculate it before the
+    -- render iterations because the title may be rendered before the slider.
+    state.forced_title = nil
+    local se, ae = state.slider_element, elements[state.active_element]
+    if user_opts.chapter_fmt ~= "no" and se and (ae == se or (not ae and mouse_hit(se))) then
+        local dur = mp.get_property_number("duration", 0)
+        if dur > 0 then
+            local possec = get_slider_value(se) * dur / 100 -- of mouse pos
+            local ch = get_chapter(possec)
+            if ch and ch.title and ch.title ~= "" then
+                state.forced_title = string.format(user_opts.chapter_fmt, ch.title)
+            end
+        end
+    end
 
     for n=1, #elements do
         local element = elements[n]
@@ -2221,6 +814,7 @@ function render_elements(master_ass)
                     end
 
                     local tx = get_virt_mouse_pos()
+                    local thumb_tx = tx
                     if (slider_lo.adjust_tooltip) then
                         if (an == 2) then
                             if (sliderpos < (s_min + 3)) then
@@ -2245,10 +839,43 @@ function render_elements(master_ass)
                     ass_append_alpha(elem_ass, slider_lo.alpha, 0)
                     elem_ass:append(tooltiplabel)
 
-                    -- mpv_thumbnail_script.lua --
-                    display_thumbnail({x=get_virt_mouse_pos(), y=ty, a=an}, sliderpos, elem_ass)
-                    -- // mpv_thumbnail_script.lua // --
+                    -- thumbnail
+                    if not thumbfast.disabled and thumbfast.width ~= 0 and thumbfast.height ~= 0 then
+                        local osd_w = mp.get_property_number("osd-width")
+                        if osd_w then
+                            local r_w, r_h = get_virt_scale_factor()
 
+                            local tooltip_font_size = (user_opts.layout == "box" or user_opts.layout == "slimbox") and 2 or 12
+                            local thumb_ty = user_opts.layout ~= "topbar" and element.hitbox.y1 - 8 or element.hitbox.y2 + tooltip_font_size + 8
+
+                            local thumb_pad = 2
+                            local thumb_margin_x = 20 / r_w
+                            local thumb_margin_y = (4 + user_opts.tooltipborder) / r_h + thumb_pad
+                            local thumb_x = math.min(osd_w - thumbfast.width - thumb_margin_x, math.max(thumb_margin_x, thumb_tx / r_w - thumbfast.width / 2))
+                            local thumb_y = user_opts.layout ~= "topbar" and thumb_ty / r_h - thumbfast.height - tooltip_font_size / r_h - thumb_margin_y or thumb_ty / r_h + thumb_margin_y
+
+                            thumb_x = math.floor(thumb_x + 0.5)
+                            thumb_y = math.floor(thumb_y + 0.5)
+
+                            elem_ass:new_event()
+                            elem_ass:pos(thumb_x * r_w, thumb_y * r_h)
+                            elem_ass:append(osc_styles.timePosBar)
+                            elem_ass:append("{\\1a&H20&}")
+                            elem_ass:draw_start()
+                            elem_ass:rect_cw(-thumb_pad * r_w, -thumb_pad * r_h, (thumbfast.width + thumb_pad) * r_w, (thumbfast.height + thumb_pad) * r_h)
+                            elem_ass:draw_stop()
+
+                            mp.commandv("script-message-to", "thumbfast", "thumb",
+                                mp.get_property_number("duration", 0) * (sliderpos / 100),
+                                thumb_x,
+                                thumb_y
+                            )
+                        end
+                    end
+                else
+                    if thumbfast.width ~= 0 and thumbfast.height ~= 0 then
+                        mp.commandv("script-message-to", "thumbfast", "clear")
+                    end
                 end
             end
 
@@ -2898,6 +1525,11 @@ function bar_layout(direction)
     local padY = 3
     local buttonW = 27
     local tcW = (state.tc_ms) and 170 or 110
+    if user_opts.tcspace >= 50 and user_opts.tcspace <= 200 then
+        -- adjust our hardcoded font size estimation
+        tcW = tcW * user_opts.tcspace / 100
+    end
+
     local tsW = 90
     local minW = (buttonW + padX)*5 + (tcW + padX)*4 + (tsW + padX)*2
 
@@ -3146,8 +1778,11 @@ function update_options(list)
     validate_user_opts()
     request_tick()
     visibility_mode(user_opts.visibility, true)
+    update_duration_watch()
     request_init()
 end
+
+local UNICODE_MINUS = string.char(0xe2, 0x88, 0x92)  -- UTF-8 for U+2212 MINUS SIGN
 
 -- OSC INIT
 function osc_init()
@@ -3197,7 +1832,8 @@ function osc_init()
     ne = new_element("title", "button")
 
     ne.content = function ()
-        local title = mp.command_native({"expand-text", user_opts.title})
+        local title = state.forced_title or
+                      mp.command_native({"expand-text", user_opts.title})
         -- escape ASS, and strip newlines and trailing slashes
         title = title:gsub("\\n", " "):gsub("\\$", ""):gsub("{","\\{")
         return not (title == "") and title or "mpv"
@@ -3225,7 +1861,9 @@ function osc_init()
     ne.eventresponder["mbtn_left_up"] =
         function ()
             mp.commandv("playlist-prev", "weak")
-            show_message(get_playlist(), 3)
+            if user_opts.playlist_osd then
+                show_message(get_playlist(), 3)
+            end
         end
     ne.eventresponder["shift+mbtn_left_up"] =
         function () show_message(get_playlist(), 3) end
@@ -3240,7 +1878,9 @@ function osc_init()
     ne.eventresponder["mbtn_left_up"] =
         function ()
             mp.commandv("playlist-next", "weak")
-            show_message(get_playlist(), 3)
+            if user_opts.playlist_osd then
+                show_message(get_playlist(), 3)
+            end
         end
     ne.eventresponder["shift+mbtn_left_up"] =
         function () show_message(get_playlist(), 3) end
@@ -3295,7 +1935,9 @@ function osc_init()
     ne.eventresponder["mbtn_left_up"] =
         function ()
             mp.commandv("add", "chapter", -1)
-            show_message(get_chapterlist(), 3)
+            if user_opts.chapters_osd then
+                show_message(get_chapterlist(), 3)
+            end
         end
     ne.eventresponder["shift+mbtn_left_up"] =
         function () show_message(get_chapterlist(), 3) end
@@ -3310,7 +1952,9 @@ function osc_init()
     ne.eventresponder["mbtn_left_up"] =
         function ()
             mp.commandv("add", "chapter", 1)
-            show_message(get_chapterlist(), 3)
+            if user_opts.chapters_osd then
+                show_message(get_chapterlist(), 3)
+            end
         end
     ne.eventresponder["shift+mbtn_left_up"] =
         function () show_message(get_chapterlist(), 3) end
@@ -3374,6 +2018,7 @@ function osc_init()
     ne = new_element("seekbar", "slider")
 
     ne.enabled = not (mp.get_property("percent-pos") == nil)
+    state.slider_element = ne.enabled and ne or nil  -- used for forced_title
     ne.slider.markerF = function ()
         local duration = mp.get_property_number("duration", nil)
         if not (duration == nil) then
@@ -3468,10 +2113,11 @@ function osc_init()
     ne.visible = (mp.get_property_number("duration", 0) > 0)
     ne.content = function ()
         if (state.rightTC_trem) then
+            local minus = user_opts.unicodeminus and UNICODE_MINUS or "-"
             if state.tc_ms then
-                return ("-"..mp.get_property_osd("playtime-remaining/full"))
+                return (minus..mp.get_property_osd("playtime-remaining/full"))
             else
-                return ("-"..mp.get_property_osd("playtime-remaining"))
+                return (minus..mp.get_property_osd("playtime-remaining"))
             end
         else
             if state.tc_ms then
@@ -3502,10 +2148,10 @@ function osc_init()
             dmx_cache = state.dmx_cache
         end
         local min = math.floor(dmx_cache / 60)
-        local sec = dmx_cache % 60
+        local sec = math.floor(dmx_cache % 60) -- don't round e.g. 59.9 to 60
         return "Cache: " .. (min > 0 and
             string.format("%sm%02.0fs", min, sec) or
-            string.format("%3.0fs", dmx_cache))
+            string.format("%3.0fs", sec))
     end
 
     -- volume
@@ -3719,7 +2365,14 @@ function render()
     end
 
     -- init management
-    if state.initREQ then
+    if state.active_element then
+        -- mouse is held down on some element - keep ticking and igore initReq
+        -- till it's released, or else the mouse-up (click) will misbehave or
+        -- get ignored. that's because osc_init() recreates the osc elements,
+        -- but mouse handling depends on the elements staying unmodified
+        -- between mouse-down and mouse-up (using the index active_element).
+        request_tick()
+    elseif state.initREQ then
         osc_init()
         state.initREQ = false
 
@@ -3756,14 +2409,10 @@ function render()
             if (state.anitype == "out") then
                 osc_visible(false)
             end
-            state.anistart = nil
-            state.animation = nil
-            state.anitype =  nil
+            kill_animation()
         end
     else
-        state.anistart = nil
-        state.animation = nil
-        state.anitype =  nil
+        kill_animation()
     end
 
     --mouse show/hide area
@@ -3850,21 +2499,10 @@ function render()
     -- Messages
     render_message(ass)
 
-    -- mpv_thumbnail_script.lua --
-    local thumb_was_visible = osc_thumb_state.visible
-    osc_thumb_state.visible = false
-    -- // mpv_thumbnail_script.lua // --
-
     -- actual OSC
     if state.osc_visible then
         render_elements(ass)
     end
-
-    -- mpv_thumbnail_script.lua --
-    if not osc_thumb_state.visible and thumb_was_visible then
-        hide_thumbnail()
-    end
-    -- // mpv_thumbnail_script.lua // --
 
     -- submit
     set_osd(osc_param.playresy * osc_param.display_aspect,
@@ -3946,8 +2584,10 @@ function process_event(source, what)
         if element_has_action(elements[n], action) then
             elements[n].eventresponder[action](elements[n])
         end
-        request_tick()
     end
+
+    -- ensure rendering after any (mouse) event - icons could change etc
+    request_tick()
 end
 
 
@@ -3989,29 +2629,37 @@ function tick()
 
         -- render idle message
         msg.trace("idle message")
-        local icon_x, icon_y = 320 - 26, 140
+        local _, _, display_aspect = mp.get_osd_size()
+        local display_h = 360
+        local display_w = display_h * display_aspect
+        -- logo is rendered at 2^(6-1) = 32 times resolution with size 1800x1800
+        local icon_x, icon_y = (display_w - 1800 / 32) / 2, 140
         local line_prefix = ("{\\rDefault\\an7\\1a&H00&\\bord0\\shad0\\pos(%f,%f)}"):format(icon_x, icon_y)
 
         local ass = assdraw.ass_new()
         -- mpv logo
-        for i, line in ipairs(logo_lines) do
-            ass:new_event()
-            ass:append(line_prefix .. line)
+        if user_opts.idlescreen then
+            for i, line in ipairs(logo_lines) do
+                ass:new_event()
+                ass:append(line_prefix .. line)
+            end
         end
 
         -- Santa hat
-        if is_december and not user_opts.greenandgrumpy then
+        if is_december and user_opts.idlescreen and not user_opts.greenandgrumpy then
             for i, line in ipairs(santa_hat_lines) do
                 ass:new_event()
                 ass:append(line_prefix .. line)
             end
         end
 
-        ass:new_event()
-        ass:pos(320, icon_y+65)
-        ass:an(8)
-        ass:append("Drop files or URLs to play here.")
-        set_osd(640, 360, ass.text)
+        if user_opts.idlescreen then
+            ass:new_event()
+            ass:pos(display_w / 2, icon_y + 65)
+            ass:an(8)
+            ass:append("Drop files or URLs to play here.")
+        end
+        set_osd(display_w, display_h, ass.text)
 
         if state.showhide_enabled then
             mp.disable_key_bindings("showhide")
@@ -4033,7 +2681,17 @@ function tick()
     state.tick_last_time = mp.get_time()
 
     if state.anitype ~= nil then
-        request_tick()
+        -- state.anistart can be nil - animation should now start, or it can
+        -- be a timestamp when it started. state.idle has no animation.
+        if not state.idle and
+           (not state.anistart or
+            mp.get_time() < 1 + state.anistart + user_opts.fadeduration/1000)
+        then
+            -- animating or starting, or still within 1s past the deadline
+            request_tick()
+        else
+            kill_animation()
+        end
     end
 end
 
@@ -4061,27 +2719,47 @@ function enable_osc(enable)
     end
 end
 
--- mpv_thumbnail_script.lua --
+-- duration is observed for the sole purpose of updating chapter markers
+-- positions. live streams with chapters are very rare, and the update is also
+-- expensive (with request_init), so it's only observed when we have chapters
+-- and the user didn't disable the livemarkers option (update_duration_watch).
+function on_duration() request_init() end
 
-local builtin_osc_enabled = mp.get_property_native('osc')
-if builtin_osc_enabled then
-    local err = "You must disable the built-in OSC with osc=no in your configuration!"
-    mp.osd_message(err, 5)
-    msg.error(err)
+local duration_watched = false
+function update_duration_watch()
+    local want_watch = user_opts.livemarkers and
+                       (mp.get_property_number("chapters", 0) or 0) > 0 and
+                       true or false  -- ensure it's a boolean
 
-    -- This may break, but since we can, let's try to just disable the builtin OSC.
-    mp.set_property_native('osc', false)
+    if (want_watch ~= duration_watched) then
+        if want_watch then
+            mp.observe_property("duration", nil, on_duration)
+        else
+            mp.unobserve_property(on_duration)
+        end
+        duration_watched = want_watch
+    end
 end
 
--- // mpv_thumbnail_script.lua // --
-
-
 validate_user_opts()
+update_duration_watch()
 
 mp.register_event("shutdown", shutdown)
 mp.register_event("start-file", request_init)
+mp.observe_property("osc", "bool", function(name, value)
+    if value == true then
+        mp.set_property("osc", "no")
+    end
+end)
 mp.observe_property("track-list", nil, request_init)
 mp.observe_property("playlist", nil, request_init)
+mp.observe_property("chapter-list", "native", function(_, list)
+    list = list or {}  -- safety, shouldn't return nil
+    table.sort(list, function(a, b) return a.time < b.time end)
+    state.chapter_list = list
+    update_duration_watch()
+    request_init()
+end)
 
 mp.register_script_message("osc-message", show_message)
 mp.register_script_message("osc-chapterlist", function(dur)
@@ -4217,13 +2895,14 @@ function visibility_mode(mode, no_osd)
     end
 
     user_opts.visibility = mode
+    utils.shared_script_property_set("osc-visibility", mode)
 
     if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
         mp.osd_message("OSC visibility: " .. mode)
     end
 
     -- Reset the input state on a mode change. The input state will be
-    -- recalcuated on the next render cycle, except in 'never' mode where it
+    -- recalculated on the next render cycle, except in 'never' mode where it
     -- will just stay disabled.
     mp.disable_key_bindings("input")
     mp.disable_key_bindings("window-controls")
@@ -4233,9 +2912,44 @@ function visibility_mode(mode, no_osd)
     request_tick()
 end
 
+function idlescreen_visibility(mode, no_osd)
+    if mode == "cycle" then
+        if user_opts.idlescreen then
+            mode = "no"
+        else
+            mode = "yes"
+        end
+    end
+
+    if mode == "yes" then
+        user_opts.idlescreen = true
+    else
+        user_opts.idlescreen = false
+    end
+
+    utils.shared_script_property_set("osc-idlescreen", mode)
+
+    if not no_osd and tonumber(mp.get_property("osd-level")) >= 1 then
+        mp.osd_message("OSC logo visibility: " .. tostring(mode))
+    end
+
+    request_tick()
+end
+
 visibility_mode(user_opts.visibility, true)
 mp.register_script_message("osc-visibility", visibility_mode)
 mp.add_key_binding(nil, "visibility", function() visibility_mode("cycle") end)
+
+mp.register_script_message("osc-idlescreen", idlescreen_visibility)
+
+mp.register_script_message("thumbfast-info", function(json)
+    local data = utils.parse_json(json)
+    if type(data) ~= "table" or not data.width or not data.height then
+        msg.error("thumbfast-info: received json didn't produce a table with thumbnail information")
+    else
+        thumbfast = data
+    end
+end)
 
 set_virt_mouse_area(0, 0, 0, 0, "input")
 set_virt_mouse_area(0, 0, 0, 0, "window-controls")
