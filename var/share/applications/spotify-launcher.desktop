@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type=Application
-Name=Spotify
+Name=Spotify (Launcher)
 GenericName=Music Player
-Icon=spotify-client
+Icon=spotify-launcher
 Exec=spotify-wrapper
 Terminal=false
 MimeType=x-scheme-handler/spotify;
