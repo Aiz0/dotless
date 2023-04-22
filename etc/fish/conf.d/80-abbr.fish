@@ -24,7 +24,7 @@ if status is-interactive
     abbr -ag db  'dotbare'
     abbr -ag dbs 'dotbare fstat'
     #abbr -ag dbc 'dotbare commit'
-    abbr -ag dbp 'dotbare  -ag push'
+    abbr -ag dbp 'dotbare push'
 
 
     # Kakoune kcr
