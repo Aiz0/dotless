@@ -3,7 +3,7 @@ templates:
     
 ##### Anime series config
   anime-series:
-    #include: anime.yml
+    include: anime.yml
     configure_series:
       from:
         entry_list: anilist-series
@@ -28,9 +28,9 @@ templates:
           
 ##### torrent config
   torrents:
-    torrent_alive:
-      min_seeds: 3
-      reject_for: 15 minutes
+    #torrent_alive:
+    #  min_seeds: 3
+    #  reject_for: 15 minutes
     magnets: no
     domain_delay:
       nyaa: 3 seconds
@@ -44,6 +44,7 @@ templates:
       
 ##### transmission anime
   transmission-anime-series:
+    pathscrub: windows
     transmission:
       main_file_only: yes
       content_filename: "{{series_name}} - ep{{series_id}} - [{{quality}}]"
@@ -78,7 +79,7 @@ tasks:
       # Torrents use SX instead of Season X
       # Anilist has seperate entries for series that airs in multiple parts or cours
       # Finally trim any spaces on the end
-      title: "{{al_title.english |
+      title: "{{al_title.romaji |
                 re_replace('Season ', 'S') |
                 re_replace(' II$', ' S2') |
                 re_replace(' III$', ' S3') |
@@ -114,3 +115,18 @@ tasks:
     exec:
       on_output:
         for_accepted: rm -f "{{location}}"
+
+
+  download-shadow:
+    priority: 13
+    template:
+        - disable-seen-retry
+        - notify
+    inputs:
+      - rss:
+          url: https://nyaa.si/?page=rss&q=Kage+no+Jitsuryokusha+ni+Naritakute%21&c=1_2&f=0&u=Gradius
+          all_entries: no
+    accept_all: yes
+    transmission:
+      main_file_only: yes
+      path: "/{? folder.media.root ?}{? folder.media.anime ?} Kage no Jitsuryokusha ni Naritakute/"
