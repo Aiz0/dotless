@@ -2,7 +2,7 @@
 # Wrapper script for spotify to delete ~/Downloads after launch if it's empty
 
 /bin/spotify-launcher &
-sleep 0.2
+sleep 1
 rmdir ~/Downloads/
 disown
 exit
