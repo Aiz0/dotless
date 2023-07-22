@@ -4,8 +4,9 @@ Documentation=https://github.com/Horus645/swww
 PartOf=wayland-session.target
 
 [Service]
-Type=simple
-ExecStart=swww init --no-daemon
+Type=forking
+ExecStart=swww init
+ExecStop=swww kill
 
 [Install]
 WantedBy=wayland-session.target
