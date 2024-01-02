@@ -1,0 +1,12 @@
+[Unit]
+Description=Ags daemon
+Documentation=https://github.com/Aylur/ags/wiki
+PartOf=wayland-session.target
+StartLimitInterval=0
+
+[Service]
+ExecStart=/usr/bin/ags
+ExecStop=/usr/bin/ags -q
+
+[Install]
+WantedBy=wayland-session.target
