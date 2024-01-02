@@ -4,8 +4,6 @@ x-scheme-handler/trash=exo-file-manager.desktop;
 inode/x-shortcut=firefox.desktop;
 application/x-mswinurl=firefox.desktop;
 image/gif=mpv.desktop;
-
-# firefox can display images
 image/bmp=firefox.desktop
 image/gif=firefox.desktop
 image/jpeg=firefox.desktop
@@ -16,20 +14,16 @@ image/tiff=firefox.desktop
 image/heif=firefox.desktop
 image/webp=firefox.desktop
 image/avif=firefox.desktop
+image/x-dds=imv.desktop;gimp.desktop;
 
 [Default Applications]
 text/plain=kcr.desktop
 application/json=kcr.desktop
-
-
-# HTML/xml firefox
 text/html=firefox.desktop
 text/xml=firefox.desktop
 application/xhtml+xml=firefox.desktop
 x-scheme-handler/http=firefox.desktop
 x-scheme-handler/https=firefox.desktop
-
-# Image imv
 image/bmp=imv.desktop
 image/gif=imv.desktop
 image/jpeg=imv.desktop
@@ -49,8 +43,6 @@ image/x-xbitmap=imv.desktop
 image/heif=imv.desktop
 image/webp=imv.desktop
 image/avif=imv.desktop
-
-# Video mvp
 video/3gp=mpv.desktop
 video/3gpp2=mpv.desktop
 video/3gpp=mpv.desktop
@@ -89,6 +81,7 @@ video/x-ogm+ogg=mpv.desktop
 video/x-ogm=mpv.desktop
 video/x-theora+ogg=mpv.desktop
 video/x-theora=mpv.desktop
-
-# Unity
 application/uproject=com.epicgames.UnrealEngineEditor.desktop
+x-scheme-handler/discord-430794114037055489=discord-430794114037055489.desktop
+x-scheme-handler/ror2mm=r2modman.desktop
+x-scheme-handler/discord-712465656758665259=discord-712465656758665259.desktop
