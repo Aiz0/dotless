@@ -23,12 +23,12 @@ riverctl border-color-unfocused 0x333B47
 riverctl border-color-focused 0x64B9F2
 
 # enable borders for all apps
-riverctl rule-add ssd -app-id '*'
+riverctl rule-add -app-id '*' ssd
 
 #
 # App specific
 #
 
 # Set app-ids of views which should float
-riverctl rule-add float -app-id 'float*'
-riverctl rule-add float -app-id 'popup*'
+riverctl rule-add -app-id 'float*' float
+riverctl rule-add -app-id 'popup*' float
