@@ -6,41 +6,51 @@ import VPN from "./vpn.js";
 import SystemStatus from "./system_status.js";
 import Packages from './packages.js';
 import DiskUsage from './disk_usage.js';
+import PowerMenu from './power_menu.js';
+import { Volume, Microphone } from './audio.js';
 
 // Configure the layout of the Sidebar
 
 
-const Top = (block) => Widget.Box({
+const Top = () => Widget.Box({
     vertical: 'true',
     vpack: 'start',
+    hpack: 'center',
+    spacing: 4,
     children: [
-        SystemStatus({block}),
-        DiskUsage({block}),
+        SystemStatus(),
+        DiskUsage(),
     ],
 })
 
 const Center = (monitor, block) => Widget.Box({
     vertical: 'true',
+    hpack: 'center',
     children: [
         RiverTags(monitor, block),
     ],
 })
 
-const Bottom = (block) => Widget.Box({
+const Bottom = () => Widget.Box({
     vertical: true,
     vpack: 'end',
+    hpack: 'center',
+    spacing: 4,
     children: [
         Packages(),
+        Microphone(),
+        Volume(),
         VPN(),
-        Clock({block}),
+        Clock(),
+        PowerMenu(),
     ],
 })
 
-const Layout = (monitor, block) => Widget.CenterBox({
+const Layout = (monitor) => Widget.CenterBox({
     vertical: true,
-    startWidget: Top(block),
-    centerWidget: Center(monitor, block),
-    endWidget: Bottom(block),
+    startWidget: Top(),
+    centerWidget: Center(monitor),
+    endWidget: Bottom(),
 })
 
 
@@ -51,7 +61,5 @@ export default (monitor) =>
         monitor,
         anchor: ["top", "bottom", "left"],
         exclusivity: "exclusive",
-        defaultWidth: 50,
-        resizable: false,
-        child: Layout(monitor, 'sidebar')
+        child: Layout(monitor)
     });

@@ -1,50 +1,30 @@
 import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import Clock from '../widgets/clock.js';
-import { getBEMClassName } from '../utils.js';
-
-const def_modifiers = ['large', 'bold']
 
 const seperator = () => Widget.Label({
-    className: getBEMClassName('sidebar', 'label' ['huge', 'bold']),
     label: "🞄",
 })
 
-const clocks = ({block} = {}) => Widget.Box({
+const clocks = () => Widget.Box({
     vertical: true,
     children:[
         Clock({
-            format: '%a',
-            block: block,
-            modifiers: def_modifiers,
-        }),
-        Clock({
-            format: '%b',
-            block: 'sidebar',
-            modifiers: def_modifiers
-        }),
-        Clock({
-            format: '%e',
-            block: 'sidebar',
-            modifiers: def_modifiers
+            format: '%H\n%M',
+            className: 'label--huge',
+            justification: 'center',
         }),
         seperator(),
         Clock({
-            format: '%H',
-            block: 'sidebar',
-            modifiers: ['huge', 'bold']
-            
-        }),
-        Clock({
-            format: '%M',
-            block: 'sidebar',
-            modifiers: def_modifiers
+            format: '%a\n%b\n%-e',
+            justification: 'center',
         }),
     ],
 })
 
-export default ({block = ''} = {}) =>
+export default () =>
     Widget.Button({
-        className: getBEMClassName(block, 'button'),
-        child: clocks({block}),
+        className: 'button2',
+        cursor: 'pointer',
+        child: clocks(),
     })
 

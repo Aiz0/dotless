@@ -1,47 +1,26 @@
-import Widget from 'resource:///com/github/Aylur/ags/widget.js';
+import Widget from 'resource:///com/github/Aylur/ags/widget.js'
 
-import { riverState } from '../variables.js';
-import { getBEMClassName, focusRiverTag, toggleRiverTag } from '../utils.js';
-import options from '../options.js';
+import { riverState } from '../variables.js'
+import { focusRiverTag, toggleRiverTag } from '../utils.js'
+import IconButton from '../widgets/icon_button.js'
+import options from '../options.js'
 
-
-// TODO move to utils
-
-// simplify?
-function getModifiers(riverState, tag, monitor) {
-    const output = options.monitors[monitor]
-    const modifiers = ['large', 'round']
-    // Urgent
-    if (riverState?.urgency?.[output]?.includes(tag.toString())){
-        modifiers.push('urgent')
-    }
-    if (riverState?.tags?.[output]?.includes(tag.toString())){
-        modifiers.push('selected')
-    } else if (!riverState?.viewstag?.[output]?.includes(tag)){
-        modifiers.push('discrete', 'inactive')
-    }
-    // Tag incactive
-    return modifiers
-
-    
-}
-
-const RiverTag = (name, tag, monitor, block) => Widget.Button({
+const RiverTag = (name, tag, monitor ) => IconButton({
     label: name,
-    widthRequest:40,
-    heightRequest:40,
-    cursor: 'pointer',
     onPrimaryClickRelease: () => focusRiverTag(tag),
     onSecondaryClickRelease: () => toggleRiverTag(tag),
-    setup: self => self.hook(riverState, () => {
-        self.className = getBEMClassName(block, 'button', getModifiers(riverState.value, tag, monitor))
-    })
+    css: 'font-size: 1rem'
+}).hook(riverState, self => {
+    const monitorName = options.monitors[monitor]
+    self.toggleClassName('icon-button--urgent', riverState.value.urgent?.[monitorName]?.includes(tag))
+    self.toggleClassName('icon-button--selected', riverState.value.tags?.[monitorName]?.includes(tag.toString()))
+    self.toggleClassName('icon-button--inactive', !riverState.value.viewstag?.[monitorName]?.includes(tag))
 })
 
-export default ( monitor, block) =>
+export default ( monitor ) =>
     Widget.Box({
         hpack:'center',
-        //className: getBEMClassName(block, 'container'),
         vertical: 'true',
-        children: options.riverTags.map((name, i) => RiverTag(name, i + 1, monitor, block))
+        spacing: 2,
+        children: options.riverTags.map((name, i) => RiverTag(name, i + 1, monitor ))
     })

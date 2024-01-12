@@ -5,15 +5,13 @@ import options from '../options.js';
 import { getBEMClassName } from '../utils.js';
 
 export default ({
-    format = '%H:%M:%S %B %e. %A',
+    format = '%F',
     interval = options.poll.short,
-    block = '',
-    modifiers = [],
     ...rest
 } = {}) =>
     Widget.Label({
-        className: getBEMClassName(block, 'label', modifiers),
+        className: 'label--large',
         ...rest,
     }).poll(interval, self => {
-        self.label = GLib.DateTime.new_now_local().format(format).trim() || 'wrong format'
+        self.label = GLib.DateTime.new_now_local().format(format) || 'wrong format'
     });

@@ -10,8 +10,29 @@ export default {
         disconnected: icons + 'proton-vpn-state-disconnected.svg',
     },
     system: {
-        cpu:"󰍛",
-        ram:"󰞯",
-        gpu:"󰢮",
-    }
+        cpu: '󰍛',
+        ram: '󰞯',
+        gpu: '󰢮',
+        disk: '󰋊',
+        
+    },
+    powermenu: {
+        shutdown: '󰐥',
+        sleep: '󰤄',
+        logout: '󰍃',
+        reboot: '󰜉',
+        lock: '󰌾',
+    },
+    audio: {
+        volume: {
+            high: '󰕾',
+            medium: '󰖀',
+            low: '󰕿',
+            muted: '󰝟',
+        },
+        microphone: {
+            on: '󰍬',
+            off: '󰍭',
+        }
+    },
 }
