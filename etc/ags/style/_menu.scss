@@ -1,0 +1,19 @@
+@use 'colors' as *;
+@use 'common/unset';
+
+menu {
+    @include unset.unset(true);
+    background: $surface-container-high;
+    color: $on-surface;
+    border-radius: 0.25rem;
+    padding: 0.5rem 0rem;
+    font-size: 1rem;
+ 
+    menuitem {
+        border-radius: 0.25rem;
+
+        &:hover {
+            background: $surface-container-highest;
+        }
+    }
+}

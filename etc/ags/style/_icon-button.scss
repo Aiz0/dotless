@@ -1,0 +1,37 @@
+@use 'sass:color';
+@use 'colors' as *;
+@use 'common/unset';
+
+.icon-button {
+    @include unset.unset;
+    font-size: 1.2rem;
+    color: $primary;
+    min-width: 30px;
+    min-height: 30px;
+    transition-duration: 200ms;
+    border-radius: 999px;
+
+    &:hover {
+        background: color.change($primary, $alpha: 0.12);
+    }
+    &:active {
+        background: color.change($primary, $alpha: 0.50);
+    }
+
+    &--inactive {
+        color: $on-surface;
+        opacity: 0.38;
+    }
+    &--selected {
+        background: $primary;
+        color: $on-primary;
+        opacity: 1;
+        &:hover {
+            background: color.mix($primary, $on-primary, 92%);
+        }
+        &:active {
+            background: $on-primary;
+            color: $primary;
+        }
+    }
+}
