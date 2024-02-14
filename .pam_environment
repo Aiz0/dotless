@@ -1,6 +1,0 @@
-SSH_AUTH_SOCK DEFAULT="${XDG_RUNTIME_DIR}/ssh-agent.socket"
-
-# XDG base directory
-XDG_CONFIG_HOME     DEFAULT="@{HOME}/etc"
-XDG_DATA_HOME       DEFAULT="@{HOME}/var/share"
-
