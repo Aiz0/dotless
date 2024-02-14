@@ -6,4 +6,4 @@ After=wayland-session.target
 
 [Service]
 Type=simple
-ExecStart=%h/bin/stacktile.sh
+ExecStart=%h/local/bin/stacktile.sh
