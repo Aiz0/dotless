@@ -2,8 +2,7 @@
 Name=FreeTube
 GenericName=YouTube Player
 Comment=An open source desktop YouTube player built with privacy in mind.
-#Exec=freetube --enable-features=UseOzonePlatform --ozone-platform=wayland %U
-Exec=freetube %U
+Exec=freetube --ozone-platform-hint=auto %U
 Terminal=false
 Type=Application
 Icon=freetube
