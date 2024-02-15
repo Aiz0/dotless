@@ -19,7 +19,7 @@ argparse 'show_cursor' 'select=?' 'optimize' 'copy' -- $argv
 
 
 # where should image be saved
-set scr_dir ~/usr/images/scr/linux
+set scr_dir ~/user/images/scr/linux
 set date_dir (date "+%Y/%m - %B")
 
 # what should the image be called
