@@ -4,7 +4,6 @@ import Sidebar from './js/sidebar/config.js'
 import Notifications from './js/notifications/config.js'
 import PowerMenu from './js/powermenu/config.js'
 import DashBoard from './js/dashboard/config.js'
-import Test from './js/test.js'
 
 const windows = () => [
     forMonitors(Sidebar),
