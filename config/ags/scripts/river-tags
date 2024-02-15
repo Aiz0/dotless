@@ -1,0 +1,13 @@
+#!/bin/fish
+
+argparse 'focus' 'toggle' -- $argv
+
+if test $argv -ge 0
+    set tags (math "2^($argv - 1)")
+end
+
+if test $_flag_focus
+    riverctl set-focused-tags $tags
+else if test $_flag_toggle
+    riverctl toggle-focused-tags $tags
+end

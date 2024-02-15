@@ -1,0 +1,20 @@
+@use 'colors' as *;
+@use 'common/unset' as *;
+
+.notification {
+    background: $surface-container-highest;
+    color: $on-surface;
+    border-radius: 28px;
+    min-width: 27rem;
+    padding: 0.9rem 1.8rem 0.9rem 1.2rem;
+
+    &__text {
+        padding: 0 1.2rem;
+    }
+}
+
+.notification-list {
+    &__scroller {
+        min-height: 450px;
+    }
+}

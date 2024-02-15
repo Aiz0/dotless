@@ -1,4 +1,0 @@
-#include    "colorscheme/blossom"
-#include    "app/urxvt"
-
-Xcursor.theme:          posy-black

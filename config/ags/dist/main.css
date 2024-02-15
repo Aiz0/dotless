@@ -1,0 +1,229 @@
+.label {
+  font-size: 1rem;
+  letter-spacing: 0.03125rem;
+}
+.label--icon {
+  font-size: 1.5rem;
+}
+.label--medium {
+  font-size: 1.05rem;
+  letter-spacing: 0.01875rem;
+}
+.label--large {
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.0075rem;
+}
+.label--huge {
+  font-size: 1.5rem;
+  font-weight: 500;
+  letter-spacing: 0.0075rem;
+}
+.label--title {
+  font-size: 1.2rem;
+  font-weight: 500;
+  letter-spacing: 0.01125rem;
+}
+.label__headline--large {
+  font-size: 2.4rem;
+  color: #E6E0E9;
+}
+.label__body--medium {
+  font-size: 1.05rem;
+  letter-spacing: 0.01875rem;
+}
+.label__body--large {
+  font-size: 1.2rem;
+  letter-spacing: 0.0375rem;
+}
+
+.button--text {
+  all: unset;
+  border-radius: 999px;
+  padding: 0.75rem 0.9rem;
+  color: #D0BCFF;
+}
+.button--text:hover {
+  background: rgba(208, 188, 255, 0.12);
+}
+.button--text:active {
+  background: rgba(208, 188, 255, 0.5);
+}
+
+.button--image {
+  all: unset;
+  border-radius: 999px;
+}
+
+.icon--rounded {
+  border-radius: 999px;
+}
+
+.button2 {
+  all: unset;
+  padding: 24px 0;
+  transition-duration: 200ms;
+  color: #E8DEF8;
+  background: #4A4458;
+  border-radius: 999px;
+}
+.button2:hover {
+  background: rgba(208, 188, 255, 0.12);
+}
+.button2:active {
+  background: rgba(208, 188, 255, 0.5);
+}
+.button2--big {
+  margin: 20px;
+  font-size: 5rem;
+  padding: 4rem;
+  border-radius: 28px;
+}
+
+.icon-button {
+  all: unset;
+  font-size: 1.2rem;
+  color: #D0BCFF;
+  min-width: 30px;
+  min-height: 30px;
+  transition-duration: 200ms;
+  border-radius: 999px;
+}
+.icon-button:hover {
+  background: rgba(208, 188, 255, 0.12);
+}
+.icon-button:active {
+  background: rgba(208, 188, 255, 0.5);
+}
+.icon-button--inactive {
+  color: #E6E0E9;
+  opacity: 0.38;
+}
+.icon-button--selected {
+  background: #D0BCFF;
+  color: #381E72;
+  opacity: 1;
+}
+.icon-button--selected:hover {
+  background: #c4aff4;
+}
+.icon-button--selected:active {
+  background: #381E72;
+  color: #D0BCFF;
+}
+
+.progress-bar {
+  all: unset;
+}
+.progress-bar * {
+  all: unset;
+}
+.progress-bar trough {
+  background: #36343B;
+  border-radius: 999px;
+}
+.progress-bar progress {
+  background: #D0BCFF;
+  border-radius: 999px;
+}
+
+.progress-circle {
+  background: #36343B;
+  color: #D0BCFF;
+  border-radius: 999px;
+  font-size: 0.25rem;
+}
+
+tooltip {
+  all: unset;
+}
+tooltip * {
+  all: unset;
+}
+tooltip.background {
+  background: #2B2930;
+  color: #E6E0E9;
+  border-radius: 0.25rem;
+}
+tooltip label {
+  padding: 0 8px;
+}
+
+menu {
+  all: unset;
+  background: #2B2930;
+  color: #E6E0E9;
+  border-radius: 0.25rem;
+  padding: 0.5rem 0rem;
+  font-size: 1rem;
+}
+menu * {
+  all: unset;
+}
+menu menuitem {
+  border-radius: 0.25rem;
+}
+menu menuitem:hover {
+  background: #36343B;
+}
+
+calendar {
+  all: unset;
+  background: #2B2930;
+  font-size: 1.2rem;
+  color: #E6E0E9;
+}
+calendar:selected {
+  background: #D0BCFF;
+  color: #381E72;
+}
+calendar.header {
+  color: #CAC4D0;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.0075rem;
+}
+calendar:indeterminate {
+  color: #CAC4D0;
+  opacity: 0.38;
+}
+
+.notification {
+  background: #36343B;
+  color: #E6E0E9;
+  border-radius: 28px;
+  min-width: 27rem;
+  padding: 0.9rem 1.8rem 0.9rem 1.2rem;
+}
+.notification__text {
+  padding: 0 1.2rem;
+}
+
+.notification-list__scroller {
+  min-height: 450px;
+}
+
+* {
+  /* `material-design-icons` is required to be installed for icons */
+  font-family: sans-serif, MaterialDesignIcons;
+}
+
+.sidebar {
+  background: #141218;
+}
+
+.shader {
+  background: rgba(0, 0, 0, 0.32);
+}
+
+.box {
+  background: #2B2930;
+  padding: 24px;
+  border-radius: 28px;
+}
+
+.dashboard {
+  background: #141218;
+}
+
+/*# sourceMappingURL=main.css.map */

@@ -1,0 +1,32 @@
+@use 'colors';
+@use 'label';
+@use 'button2';
+@use 'icon-button';
+@use 'progress-bar';
+@use 'progress-circle';
+@use 'tooltip';
+@use 'menu';
+@use 'calendar';
+@use 'notification';
+* {
+    /* `material-design-icons` is required to be installed for icons */
+    font-family: sans-serif, MaterialDesignIcons;
+}
+
+.sidebar {
+    background: colors.$surface;
+}
+
+.shader {
+    background: rgba(0,0,0,0.32);
+}
+
+.box {
+    background: colors.$surface-container-high;
+    padding: 24px;
+    border-radius: 28px;
+}
+
+.dashboard {
+    background: colors.$surface;
+}
