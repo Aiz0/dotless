@@ -9,11 +9,6 @@ function restart-ags
     systemctl restart --user ags.service
 end
 
-function apply-css
-    sass $SCSS_PATH $CSS_PATH
-    ags --run-js "const App = (await import('./app.js')).default; App.resetCss(); App.applyCss(\"$CSS_PATH\");"
-end
-
 inotifywait --quiet --monitor --recursive $AGS_CONFIG_DIR --event create,modify,delete --format '%w %f %e %T' --timefmt $TF |
     while read DIRECTORY FILE EVENT TIME
         set delta (math (date +$TF) - $TIME)
@@ -21,8 +16,6 @@ inotifywait --quiet --monitor --recursive $AGS_CONFIG_DIR --event create,modify,
             switch (path extension $FILE)
                 case .js
                     restart-ags
-                case .scss
-                    apply-css
             end
             sleep 2
         end
