@@ -6,11 +6,11 @@ import Notifications from "./notifications.js";
 export default () =>
   Widget.Window({
     name: "dashboard",
-    className: "dashboard",
+    className: "bg-neutral-900",
     anchor: ["top", "left"],
-    margin: [0, 5],
+    margins: [0, 5],
     monitor: 1,
-    visible: false,
+    visible: true,
     child: Widget.Box({
       vertical: true,
       hpack: "start",

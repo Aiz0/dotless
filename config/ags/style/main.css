@@ -17,3 +17,8 @@ tooltip.background {
 tooltip label {
   @apply px-2
 }
+
+.min-size-icon {
+  min-width: 78px;
+  min-height: 78px;
+}

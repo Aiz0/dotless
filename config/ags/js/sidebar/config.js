@@ -19,11 +19,11 @@ const Top = () =>
     children: [PowerMenu(), SystemStatus(), DiskUsage()],
   });
 
-const Center = (monitor, block) =>
+const Center = (monitor) =>
   Widget.Box({
     vertical: true,
     hpack: "center",
-    children: [RiverTags(monitor, block)],
+    children: [RiverTags(monitor)],
   });
 
 const Bottom = () =>

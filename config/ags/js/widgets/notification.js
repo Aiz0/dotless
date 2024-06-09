@@ -8,15 +8,8 @@ const NotificationIcon = ({ app_entry, app_icon, image }) => {
     return Widget.Box({
       vpack: "start",
       hexpand: false,
-      class_name: "icon img",
-      css: `
-                background-image: url("${image}");
-                background-size: cover;
-                background-repeat: no-repeat;
-                background-position: center;
-                min-width: 78px;
-                min-height: 78px;
-            `,
+      class_name: "bg-contain bg-no-repeat bg-center min-size-icon",
+      css: `background-image: url("${image}");`,
     });
   }
 
@@ -28,11 +21,7 @@ const NotificationIcon = ({ app_entry, app_icon, image }) => {
   return Widget.Box({
     vpack: "start",
     hexpand: false,
-    class_name: "icon",
-    css: `
-            min-width: 78px;
-            min-height: 78px;
-        `,
+    class_name: "min-size-icon",
     child: Widget.Icon({
       icon,
       size: 32,
@@ -47,18 +36,17 @@ const NotificationIcon = ({ app_entry, app_icon, image }) => {
 /** @param {import('types/service/notifications').Notification} notification */
 export default (notification) => {
   const text = Widget.Box({
-    className: "notification__text",
+    className: "px-7",
     vertical: true,
     children: [
       Widget.Label({
         label: notification.summary,
-        className: "label__body--large",
+        className: "text-xl",
         truncate: "end",
         hpack: "start",
       }),
       Widget.Label({
         label: notification.body,
-        className: "label__body--medium",
         use_markup: true,
         hpack: "start",
         truncate: "end",
@@ -72,7 +60,6 @@ export default (notification) => {
     startWidget: NotificationIcon(notification),
     centerWidget: text,
     endWidget: Widget.Label({
-      class_name: "label__body--medium",
       hpack: "end",
       justification: "right",
       label: GLib.DateTime.new_from_unix_local(notification.time).format(
@@ -86,12 +73,14 @@ export default (notification) => {
     children: [
       notification.actions.map((action) =>
         Widget.Button({
-          className: "button--text",
+          className:
+            "rounded-full p-3 hover:bg-pink-500/15 active:bg-pink-500/50",
           label: action.label,
         })
       ),
       Widget.Button({
-        className: "button--text",
+        className:
+          "rounded-full p-3 hover:bg-pink-500/15 active:bg-pink-500/50",
         label: "Close",
         onClicked: () => notification.close(),
       }),
@@ -101,7 +90,7 @@ export default (notification) => {
   return Widget.EventBox({
     onPrimaryClick: () => notification.dismiss(),
     child: Widget.Box({
-      class_name: `notification notification--${notification.urgency}`,
+      class_name: `bg-neutral-800 text-white rounded-2xl min-w-96 px-4 pt-7 pb-5`,
       vertical: true,
       vexpand: false,
       children: [content, actions],
