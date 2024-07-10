@@ -9,7 +9,7 @@ riverctl set-repeat 40 275
 riverctl xcursor-theme posy-black
 
 # Hide cursor after 5s
-riverctl hide-cursor timeout 5000
+#riverctl hide-cursor timeout 5000
 
 # Attach new views at bottom of view stack
 riverctl attach-mode bottom
