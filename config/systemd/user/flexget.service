@@ -6,7 +6,7 @@ PartOf=graphical-session.target
 
 [Service]
 Type=simple
-ExecStart=%h/var/state/pipx/bin/flexget execute --now
+ExecStart=%h/local/var/lib/pipx/bin/flexget execute --now
 
 [Install]
 WantedBy=graphical-session.target
