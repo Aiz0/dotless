@@ -7,7 +7,7 @@ source $dir/settings.fish
 source $dir/bindings.fish
 
 # source layout generator specific configuration
-source $dir/layout/stacktile.fish
+source $dir/layout/wideriver/layout.fish
 
 # Session
 set -gx XDG_CURRENT_DESKTOP river
