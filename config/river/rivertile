@@ -1,5 +1,0 @@
-#!/bin/sh
-
-#riverctl spawn "rivertile -view-padding 2 -outer-padding 2 -main-ration 0.5"
-riverctl default-layout rivertile
-exec rivertile -view-padding 2 -outer-padding 2 -main-ratio 0.5
