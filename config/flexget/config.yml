@@ -6,7 +6,7 @@ templates:
     configure_series:
       from:
         entry_list: anilist-series
-      settings:
+      settings: 
         identified_by: sequence
         timeframe: 4 hours
         target: 1080p
@@ -89,15 +89,15 @@ tasks:
 
   ##### Download anime from subsplease RSS feed
   download-anime-series-rss:
-    priority: 15
+    priority: 10
     template:
       - anime-series
       - torrents
       - transmission-anime-series
     inputs:
       - rss: https://subsplease.org/rss/?t&r=1080
-      - rss: https://nyaa.si/?page=rss&q=%5B1080p%5D+-BATCH&c=0_0&f=0&u=Erai-raws
-      - rss: https://nyaa.si/?page=rss&q=isekai+onsen&c=0_0&f=0&u=Ember_Encodes
+      #- rss: https://nyaa.si/?page=rss&q=%5B1080p%5D+-BATCH&c=0_0&f=0&u=Erai-raws
+      #- rss: https://nyaa.si/?page=rss&u=Ember_Encodes
     notify:
       entries:
         title: "Added Torrent"
@@ -121,13 +121,12 @@ tasks:
       on_output:
         for_accepted: rm -f "{{location}}"
 
-  download-all-rss:
-    priority: 12
-    accept_all: yes
-    template:
-      - transmission-anime
-      - notify
-    inputs:
-      - rss:
-          url: https://nyaa.si/?page=rss&q=%5BCOPiUM%5D+Dungeon+Meshi+&c=1_2&f=2
-          all_entries: no
+  # download-all-rss:
+  #   priority: 12
+  #   accept_all: yes
+  #   template:
+  #     - transmission-anime
+  #     - notify
+  #   inputs:
+  #     - rss:
+  #         all_entries: no
