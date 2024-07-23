@@ -1,5 +1,6 @@
 import Avatar from "./avatar.js";
 import RiverTags from "./river_tags.js";
+import RiverLayout from "./river_layout.js";
 import Clock from "./clock.js";
 import VPN from "./vpn.js";
 import SystemStatus from "./system_status.js";
@@ -23,7 +24,7 @@ const Center = (monitor) =>
   Widget.Box({
     vertical: true,
     hpack: "center",
-    children: [RiverTags(monitor)],
+    children: [RiverLayout(), RiverTags(monitor)],
   });
 
 const Bottom = () =>
