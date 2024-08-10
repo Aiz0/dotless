@@ -1,0 +1,11 @@
+[Unit]
+Description= swayosd server
+PartOf=river-session.target
+After=river-session.target
+
+[Service]
+Type=simple
+ExecStart=swayosd-server
+
+[Install]
+WantedBy=river-session.target
