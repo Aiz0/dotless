@@ -2,7 +2,10 @@
 Description=A layout generator for river
 Documentation=man:wideriver(1)
 PartOf=river-session.target
-
+After=river-session.target
 [Service]
 Type=simple
 ExecStart=%h/local/config/river/layout/wideriver/wideriver.fish
+
+[Install]
+WantedBy=river-session.target
