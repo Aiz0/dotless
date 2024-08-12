@@ -1,7 +1,11 @@
 import { riverState } from "../variables.js";
-import { focusRiverTag, toggleRiverTag } from "../utils.js";
 import IconButton from "../widgets/icon_button.js";
 import options from "../options.js";
+
+const focusRiverTag = (tag) =>
+  Utils.exec(options.path.script + "/river-tags --focus " + tag.toString());
+const toggleRiverTag = (tag) =>
+  Utils.exec(options.path.script + "/river-tags --toggle " + tag.toString());
 
 const RiverTag = (name, tag, monitor) =>
   IconButton({
@@ -23,6 +27,6 @@ export default (monitor) =>
     vertical: true,
     spacing: 2,
     children: options.riverTags.map((name, i) =>
-      RiverTag(name, i + 1, monitor)
+      RiverTag(name, i + 1, monitor),
     ),
   });
