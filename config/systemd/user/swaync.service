@@ -1,0 +1,11 @@
+[Unit]
+Description= sway notification center
+PartOf=river-session.target
+After=river-session.target
+
+[Service]
+Type=simple
+ExecStart=swaync
+
+[Install]
+WantedBy=wayland-session.target

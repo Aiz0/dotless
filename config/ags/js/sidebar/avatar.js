@@ -10,5 +10,5 @@ export default () =>
       icon: icons.avatar.round,
       size: 40,
     }),
-    on_clicked: () => App.ToggleWindow("dashboard"),
+    on_clicked: () => Utils.exec("swaync-client -t"),
   });
