@@ -112,6 +112,9 @@ riverctl map normal Super P spawn ff
 riverctl map normal Super+Shift P spawn "ff --private-window"
 riverctl map normal Super+Alt P spawn "ff -P 'default'"
 
+# Editor
+riverctl map normal Super Z spawn zeditor
+
 # Launcher
 riverctl map normal Super Space spawn "fuzzel.sh"
 
