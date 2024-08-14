@@ -1,3 +1,0 @@
-timeout 300 'hyprlock'
-before-sleep 'hyprlock'
-lock 'hyprlock'
