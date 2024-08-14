@@ -117,9 +117,9 @@ riverctl map normal Super Space spawn "fuzzel.sh"
 
 
 # Lock
-riverctl map normal Super Escape spawn "swaylock -f"
+riverctl map normal Super Escape spawn "loginctl lock-session"
 # Powermenu
-riverctl map normal Super+Shift Escape spawn "nwg-bar -i 128"
+riverctl map normal Super+Shift Escape spawn "wlogout"
 
 # Screenshot
 riverctl map normal Super D spawn "wl-screenshot.sh --optimize"
