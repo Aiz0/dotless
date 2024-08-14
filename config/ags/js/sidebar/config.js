@@ -1,4 +1,4 @@
-import Avatar from "./avatar.js";
+import Notifications from "./notifications.js";
 import RiverTags from "./river_tags.js";
 import RiverLayout from "./river_layout.js";
 import Clock from "./clock.js";
@@ -33,7 +33,14 @@ const Bottom = () =>
     vpack: "end",
     hpack: "center",
     spacing: 4,
-    children: [Packages(), Microphone(), Volume(), VPN(), Clock(), Avatar()],
+    children: [
+      Packages(),
+      Microphone(),
+      Volume(),
+      VPN(),
+      Notifications(),
+      Clock(),
+    ],
   });
 
 const Layout = (monitor) =>

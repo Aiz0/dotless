@@ -7,6 +7,11 @@ export default {
     square: icons + "avatar.png",
     round: icons + "avatar-round.png",
   },
+  notifcations: {
+    normal: "󰂚",
+    badge: "󱅫",
+    dnd: "󰂛",
+  },
   packages: "󰓦",
   protonvpn: {
     sign: icons + "proton-vpn-sign.svg",
