@@ -40,7 +40,8 @@ export const packageUpdates = Variable(5, {
 */
 
 // System Status
-const divide = ([total, free]) => free / total;
+const divide = ([total, free]: string[]) =>
+  Number.parseInt(free) / Number.parseInt(total);
 
 export const cpu = Variable(0, {
   poll: [
@@ -48,12 +49,12 @@ export const cpu = Variable(0, {
     "top -b -n 1",
     (out) =>
       divide([
-        100,
+        "100",
         out
           .split("\n")
           .find((line) => line.includes("Cpu(s)"))
-          .split(/\s+/)[1]
-          .replace(",", "."),
+          ?.split(/\s+/)[1]
+          .replace(",", ".") || "0",
       ]),
   ],
 });
@@ -67,8 +68,8 @@ export const ram = Variable(0, {
         out
           .split("\n")
           .find((line) => line.includes("Mem:"))
-          .split(/\s+/)
-          .splice(1, 2),
+          ?.split(/\s+/)
+          .splice(1, 2) || ["1", "1"],
       ),
   ],
 });
@@ -77,7 +78,7 @@ export const gpu = Variable(0, {
   poll: [
     options.poll.system,
     options.path.script + "/gpu.sh",
-    (out) => out / 100,
+    (out) => divide(["100", out]),
   ],
 });
 
