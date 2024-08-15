@@ -1,6 +1,3 @@
-import App from "resource:///com/github/Aylur/ags/app.js";
-import Variable from "resource:///com/github/Aylur/ags/variable.js";
-import { interval, execAsync } from "resource:///com/github/Aylur/ags/utils.js";
 import options from "./options.js";
 
 export const riverState = Variable(
@@ -24,20 +21,11 @@ export const swaync = Variable(
 // I use checkupdates-systemd from AUR.
 // TODO add cached aur.
 export const packageUpdates = Variable(5);
-interval(options.poll.short, () =>
-  execAsync(["pacman", "-Qqu", "--dbpath", options.path.checkUpDB])
+Utils.interval(options.poll.short, () =>
+  Utils.execAsync(["pacman", "-Qqu", "--dbpath", options.path.checkUpDB])
     .then((out) => (packageUpdates.value = out.split("\n").length))
     .catch((out) => (packageUpdates.value = 0)),
 );
-
-// alternative way of doing this
-/*
-export const packageUpdates = Variable(5, {
-    poll: [options.poll.system,
-        'bash -c "pacman -Qqu --dbpath ' + options.path.checkUpDB +'| cat"',
-            out => out ? out.split('\n').length : 0]
-})
-*/
 
 // System Status
 const divide = ([total, free]: string[]) =>
