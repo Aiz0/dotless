@@ -2,7 +2,6 @@ import App from "resource:///com/github/Aylur/ags/app.js";
 
 export default {
   path: {
-    scss: App.configDir + "/style/main.scss",
     input_css: App.configDir + "/style/main.css",
     css: App.configDir + "/dist/main.css",
     script: App.configDir + "/scripts",
@@ -24,11 +23,4 @@ export default {
     [1, "low"],
     [0, "muted"],
   ],
-  powerMenu: {
-    shutdown: "",
-    reboot: "",
-    sleep: "notify-send a",
-    logout: "",
-    lock: "swaylock",
-  },
 };
