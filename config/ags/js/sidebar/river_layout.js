@@ -8,7 +8,7 @@ export default (monitor) =>
     class_name: "min-h-[30px]",
     children: [
       Widget.Label({
-        label: riverState.bind().as((value) => value.layout.toString()),
+        label: riverState.bind().as((value) => value.layout?.toString() || ""),
       }),
     ],
   });
