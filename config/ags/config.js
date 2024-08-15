@@ -1,20 +1,18 @@
-import { forMonitors } from "./js/utils.js";
-import options from "./js/options.js";
-import Sidebar from "./js/sidebar/config.js";
+const entry = App.configDir + "/main.ts";
+const outdir = "/tmp/ags/js";
 
-const windows = () => [forMonitors(Sidebar)];
+try {
+  // prettier-ignore
+  await Utils.execAsync([
+    'bun', 'build', entry,
+    '--outdir', outdir,
+    '--external', 'resource://*',
+    '--external', 'gi://*',
+  ])
+  await import(`file://${outdir}/main.js`);
+} catch (error) {
+  console.error(error);
+}
 
-Utils.exec(
-  `bash -c "cd ${App.configDir};
-  bunx tailwindcss -i ${options.path.input_css} -o ${options.path.css};
-  sed -i 's/:hover/__TEMP_HOVER__/' ${options.path.css};
-  sed -i 's/:active/__TEMP_ACTIVE__/' ${options.path.css};
-  bunx postcss ${options.path.css} -r;
-  sed -i 's/__TEMP_HOVER__/:hover/' ${options.path.css};
-  sed -i 's/__TEMP_ACTIVE__/:active/' ${options.path.css};"`,
-);
-
-App.config({
-  style: options.path.css,
-  windows: windows().flat(),
-});
+// empty export to make this a module
+export {};
