@@ -2,7 +2,3 @@ profile {
         output DP-2 enable position 1920,0 transform normal
         output HDMI-A-2 enable position 0,0 transform normal
 }
-
-profile single {
-        output * enable position 0,0
-}
