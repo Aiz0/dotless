@@ -1,6 +1,6 @@
 import { forMonitors } from "./js/utils.js";
 import options from "./js/options.js";
-import Sidebar from "./js/sidebar/config.js";
+import Sidebar from "./js/sidebar/sidebar.js";
 
 const windows = () => [forMonitors(Sidebar)];
 
