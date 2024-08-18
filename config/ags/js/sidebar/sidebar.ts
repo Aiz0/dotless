@@ -20,7 +20,7 @@ const Top = () =>
     children: [PowerMenu(), SystemStatus(), DiskUsage()],
   });
 
-const Center = (monitor) =>
+const Center = (monitor: number) =>
   Widget.Box({
     vertical: true,
     hpack: "center",
@@ -43,7 +43,7 @@ const Bottom = () =>
     ],
   });
 
-const Layout = (monitor) =>
+const Layout = (monitor: number) =>
   Widget.CenterBox({
     vertical: true,
     startWidget: Top(),
@@ -51,7 +51,7 @@ const Layout = (monitor) =>
     endWidget: Bottom(),
   });
 
-export default (monitor) =>
+export default (monitor: number) =>
   Widget.Window({
     name: `sidebar-${monitor}`,
     monitor,
