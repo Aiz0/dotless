@@ -2,12 +2,12 @@ import { riverState } from "../variables.js";
 import IconButton from "../widgets/icon_button.js";
 import options from "../options.js";
 
-const focusRiverTag = (tag) =>
+const focusRiverTag = (tag: number) =>
   Utils.exec(options.path.script + "/river-tags --focus " + tag.toString());
-const toggleRiverTag = (tag) =>
+const toggleRiverTag = (tag: number) =>
   Utils.exec(options.path.script + "/river-tags --toggle " + tag.toString());
 
-const RiverTag = (name, tag, monitor) =>
+const RiverTag = (name: string, tag: number, monitor: number) =>
   IconButton({
     label: name,
     onPrimaryClickRelease: () => focusRiverTag(tag),
@@ -21,7 +21,7 @@ const RiverTag = (name, tag, monitor) =>
     };
   });
 
-export default (monitor) =>
+export default (monitor: number) =>
   Widget.Box({
     hpack: "center",
     vertical: true,
