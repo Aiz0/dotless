@@ -11,5 +11,6 @@ export default () =>
         .bind()
         .transform((val) => `${val} update${val == 0 ? "" : "s"} available`),
       visible: packageUpdates.bind(),
+      on_clicked: () => Utils.exec("footclient --hold --no-wait yay"),
     }),
   });
