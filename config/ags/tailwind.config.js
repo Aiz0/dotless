@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./js/**/*.js"],
+  content: ["./js/**/*.js", "./js/**/*.ts"],
   theme: {
     fontSize: {
       // Remove line height

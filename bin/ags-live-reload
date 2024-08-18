@@ -16,9 +16,9 @@ inotifywait --quiet --monitor --recursive $AGS_CONFIG_DIR --event create,modify,
             switch (path extension $FILE)
                 case .js
                     restart-ags
+                case .ts
+                    restart-ags
             end
             sleep 2
         end
     end
-
-
