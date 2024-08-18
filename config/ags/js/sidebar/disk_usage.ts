@@ -4,7 +4,7 @@ import icons from "../icons.js";
 import options from "../options.js";
 
 //TODO make bar smaller
-const Bar = (mount) =>
+const Bar = (mount:string) =>
   Widget.ProgressBar({
     vertical: true,
     inverted: true,
