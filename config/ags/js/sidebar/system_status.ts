@@ -1,8 +1,7 @@
-import Widget from "resource:///com/github/Aylur/ags/widget.js";
 import { cpu, ram, gpu } from "../variables.js";
 import icons from "../icons.js";
 
-const Status = ({ variable, icon = "" } = {}) =>
+const Status = ({ variable = Variable(0), icon = "" } = {}) =>
   Widget.Box({
     children: [
       Widget.CircularProgress({
