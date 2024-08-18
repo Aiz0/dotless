@@ -17,10 +17,10 @@ export default {
   monitors: ["LGElectronics", "BNQ"],
   disks: ["/", "/home", "/run/media/aiz/Samsung_T5", "/run/media/aiz/data"],
   volumeMap: [
-    [101, "overamplified"],
-    [67, "high"],
-    [34, "medium"],
-    [1, "low"],
-    [0, "muted"],
+    { threshold: 101, status: "overamplified" },
+    { threshold: 67, status: "high" },
+    { threshold: 34, status: "medium" },
+    { threshold: 1, status: "low" },
+    { threshold: 0, status: "muted" },
   ],
 };
