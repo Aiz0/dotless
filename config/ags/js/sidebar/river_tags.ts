@@ -1,4 +1,4 @@
-import { riverState } from "../variables.js";
+import { riverActive } from "../variables.js";
 import IconButton from "../widgets/icon_button.js";
 import options from "../options.js";
 
@@ -7,17 +7,29 @@ const focusRiverTag = (tag: number) =>
 const toggleRiverTag = (tag: number) =>
   Utils.exec(options.path.script + "/river-tags --toggle " + tag.toString());
 
+type activetype = {
+  output: string;
+  id: number;
+  active: boolean;
+  focused: boolean;
+  occupied: boolean;
+  urgent: boolean;
+};
+
 const RiverTag = (name: string, tag: number, monitor: number) =>
   IconButton({
     label: name,
     onPrimaryClickRelease: () => focusRiverTag(tag),
     onSecondaryClickRelease: () => toggleRiverTag(tag),
-  }).hook(riverState, (self) => {
-    const monitorName = options.monitors[monitor];
+  }).hook(riverActive, (self) => {
+    const tagState: activetype | undefined = riverActive.value.find(
+      (obj: activetype) =>
+        obj.output === options.monitors[monitor] && obj.id === tag,
+    );
     self.attribute = {
-      urgent: riverState.value.urgency?.[monitorName]?.includes(tag.toString()),
-      selected: riverState.value.tags?.[monitorName]?.includes(tag.toString()),
-      inactive: !riverState.value.viewstag?.[monitorName]?.includes(tag),
+      urgent: tagState?.urgent || false,
+      selected: tagState?.focused || false,
+      inactive: !tagState?.occupied || false,
     };
   });
 

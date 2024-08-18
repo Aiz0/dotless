@@ -10,6 +10,20 @@ export const riverState = Variable(
   },
 );
 
+export const riverFocus = Variable([], {
+  listen: [
+    ["river-bedload", "-minified", "-watch", "focused"],
+    (out) => JSON.parse(out),
+  ],
+});
+
+export const riverActive = Variable([], {
+  listen: [
+    ["river-bedload", "-minified", "-watch", "active"],
+    (out) => JSON.parse(out),
+  ],
+});
+
 export const swaync = Variable(
   {},
   {

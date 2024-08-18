@@ -14,7 +14,7 @@ export default {
   },
   riverTags: ["一", "二", "三", "四", "五", "六", "七", "八", "九"],
 
-  monitors: ["LGElectronics", "BNQ"],
+  monitors: ["DP-2", "HDMI-A-2"],
   disks: ["/", "/home", "/run/media/aiz/Samsung_T5", "/run/media/aiz/data"],
   volumeMap: [
     { threshold: 101, status: "overamplified" },
