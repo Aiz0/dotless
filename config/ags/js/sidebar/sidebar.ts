@@ -24,7 +24,7 @@ const Center = (monitor: number) =>
   Widget.Box({
     vertical: true,
     hpack: "center",
-    children: [RiverLayout(), RiverTags(monitor)],
+    children: [RiverLayout(monitor), RiverTags(monitor)],
   });
 
 const Bottom = () =>

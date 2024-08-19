@@ -1,6 +1,7 @@
-import { riverState } from "../variables.js";
+import { riverOutputs } from "../variables.js";
+import options from "js/options.js";
 
-export default (monitor) =>
+export default (monitor: number) =>
   Widget.Box({
     hpack: "center",
     vertical: true,
@@ -8,7 +9,13 @@ export default (monitor) =>
     class_name: "min-h-[30px]",
     children: [
       Widget.Label({
-        label: riverState.bind().as((value) => value.layout?.toString() || ""),
+        label: riverOutputs
+          .bind()
+          .as(
+            (value) =>
+              value.find((obj) => obj.name === options.monitors[monitor])
+                .layout_name,
+          ),
       }),
     ],
   });

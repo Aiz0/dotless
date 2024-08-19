@@ -1,18 +1,8 @@
 import options from "./options.js";
 
-export const riverState = Variable(
-  {},
-  {
-    listen: [
-      ["ristate", "--tags", "--views-tag", "--urgency"],
-      (out) => JSON.parse(out),
-    ],
-  },
-);
-
-export const riverFocus = Variable([], {
+export const riverOutputs = Variable([], {
   listen: [
-    ["river-bedload", "-minified", "-watch", "focused"],
+    ["river-bedload", "-minified", "-watch", "outputs"],
     (out) => JSON.parse(out),
   ],
 });
