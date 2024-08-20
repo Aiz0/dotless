@@ -1,14 +1,17 @@
 import Gtk from "gi://Gtk?version=3.0";
 import Gdk from "gi://Gdk";
 
-/**
- * @returns [start...length]
- */
-export function range(length: number, start = 1) {
-  return Array.from({ length }, (_, i) => i + start);
+const display = Gdk.Display.get_default();
+export function getMonitorPlugFromWidget(widget: Gtk.Widget) {
+  const monitor = widget.get_window();
+  if (monitor == null) return null;
+  return getMonitorPlug(display?.get_monitor_at_window(monitor));
 }
-
-export function forMonitors(widget: (monitor: number) => Gtk.Window) {
-  const n = Gdk.Display.get_default()?.get_n_monitors() || 1;
-  return range(n, 0).flatMap(widget);
+export function getMonitorPlug(gdkmonitor: Gdk.Monitor | undefined) {
+  if (display == null) return null;
+  const screen = display.get_default_screen();
+  for (let i = 0; i < display.get_n_monitors(); ++i) {
+    if (gdkmonitor === display.get_monitor(i))
+      return screen.get_monitor_plug_name(i);
+  }
 }

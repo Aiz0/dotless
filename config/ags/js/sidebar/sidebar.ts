@@ -8,6 +8,8 @@ import Packages from "./packages.js";
 import DiskUsage from "./disk_usage.js";
 import PowerMenu from "./power_menu.js";
 import { Volume, Microphone } from "./audio.js";
+import Gdk from "types/@girs/gdk-3.0/gdk-3.0";
+import { getMonitorPlug } from "js/utils.js";
 
 // Configure the layout of the Sidebar
 
@@ -20,11 +22,11 @@ const Top = () =>
     children: [PowerMenu(), SystemStatus(), DiskUsage()],
   });
 
-const Center = (monitor: number) =>
+const Center = () =>
   Widget.Box({
     vertical: true,
     hpack: "center",
-    children: [RiverLayout(monitor), RiverTags(monitor)],
+    children: [RiverLayout(), RiverTags()],
   });
 
 const Bottom = () =>
@@ -43,20 +45,20 @@ const Bottom = () =>
     ],
   });
 
-const Layout = (monitor: number) =>
+const Layout = () =>
   Widget.CenterBox({
     vertical: true,
     startWidget: Top(),
-    centerWidget: Center(monitor),
+    centerWidget: Center(),
     endWidget: Bottom(),
   });
 
-export default (monitor: number) =>
+export default (gdkmonitor: Gdk.Monitor) =>
   Widget.Window({
-    name: `sidebar-${monitor}`,
-    monitor,
+    gdkmonitor,
+    name: `sidebar-${getMonitorPlug(gdkmonitor)}`,
     anchor: ["top", "bottom", "left"],
     exclusivity: "exclusive",
-    child: Layout(monitor),
+    child: Layout(),
     className: "bg-neutral-800",
   });

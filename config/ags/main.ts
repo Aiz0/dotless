@@ -1,8 +1,6 @@
-import { forMonitors } from "./js/utils.js";
 import options from "./js/options.js";
 import Sidebar from "./js/sidebar/sidebar.js";
-
-const windows = () => [forMonitors(Sidebar)];
+import Gdk from "gi://Gdk";
 
 Utils.exec(
   `bash -c "cd ${App.configDir};
@@ -14,7 +12,32 @@ Utils.exec(
   sed -i 's/__TEMP_ACTIVE__/:active/' ${options.path.css};"`,
 );
 
+function addWindows(windows) {
+  windows.forEach((win) => App.addWindow(win));
+}
+
+function addMonitorWindows(gdkmonitor: Gdk.Monitor) {
+  App.addWindow(Sidebar(gdkmonitor));
+}
+
+Utils.idle(async () => {
+  const display = Gdk.Display.get_default();
+  for (let m = 0; m < (display?.get_n_monitors() || 1); m++) {
+    const monitor = display?.get_monitor(m);
+    addMonitorWindows(monitor);
+  }
+
+  display?.connect("monitor-added", (disp, monitor) => {
+    addMonitorWindows(monitor);
+  });
+
+  display?.connect("monitor-removed", (disp, monitor) => {
+    App.windows.forEach((win) => {
+      if (win.gdkmonitor === monitor) App.removeWindow(win);
+    });
+  });
+});
+
 App.config({
   style: options.path.css,
-  windows: windows().flat(),
 });
