@@ -1,0 +1,12 @@
+#!/bin/fish
+# Wrapper script for zen-browser
+set ZEN_DIR $XDG_DATA_HOME/zen-browser-home
+
+# create directory if it doesn't exist. Useful on first launch
+if ! test -d $ZEN_DIR
+    mkdir -p $ZEN_DIR
+end
+
+# set home and launch
+set HOME $ZEN_DIR
+exec /opt/zen-browser-bin/zen-bin $argv
