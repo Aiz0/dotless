@@ -108,9 +108,7 @@ set termlist $WAYLAND_TERMINAL $TERMINAL alacritty
 riverctl map normal Super Return spawn $termlist[1]
 
 # Browser
-riverctl map normal Super P spawn ff
-riverctl map normal Super+Shift P spawn "ff --private-window"
-riverctl map normal Super+Alt P spawn "ff -P 'default'"
+riverctl map normal Super P spawn zen-browser
 
 # Editor
 riverctl map normal Super Z spawn zeditor
