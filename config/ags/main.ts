@@ -1,6 +1,7 @@
 import options from "./js/options.js";
 import Sidebar from "./js/sidebar/sidebar.js";
 import Gdk from "gi://Gdk";
+import Gtk from "types/@girs/gtk-3.0/gtk-3.0.js";
 
 Utils.exec(
   `bash -c "cd ${App.configDir};
@@ -12,7 +13,7 @@ Utils.exec(
   sed -i 's/__TEMP_ACTIVE__/:active/' ${options.path.css};"`,
 );
 
-function addWindows(windows) {
+function addWindows(windows: Gtk.Window[]) {
   windows.forEach((win) => App.addWindow(win));
 }
 
@@ -24,6 +25,7 @@ Utils.idle(async () => {
   const display = Gdk.Display.get_default();
   for (let m = 0; m < (display?.get_n_monitors() || 1); m++) {
     const monitor = display?.get_monitor(m);
+    if (monitor == null) return;
     addMonitorWindows(monitor);
   }
 
