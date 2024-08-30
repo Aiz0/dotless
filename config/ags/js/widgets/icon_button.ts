@@ -16,7 +16,7 @@ export default ({ ...rest }) =>
       self.on("notify::attribute", () => {
         if (self.attribute.urgent) {
           self.class_name =
-            base + "bg-red-400 hover:bg-slate-900 active:bg-slate-800";
+            base + "bg-red-600 hover:bg-slate-900 active:bg-slate-800";
         } else if (self.attribute.selected) {
           self.class_name =
             base + "bg-pink-500 hover:bg-pink-600 active:bg-pink-700";
