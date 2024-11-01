@@ -7,7 +7,7 @@ After=graphical-session.target nm-applet.service
 
 [Service]
 RemainAfterExit=yes
-ExecStart=protonvpn-app
+ExecStart=protonvpn-app --start-minimized
 Restart=on-failure
 
 [Install]
