@@ -1,12 +1,14 @@
 #!/bin/fish
 
-set AGS_CONFIG_DIR $XDG_CONFIG_HOME/ags
+set AGS_CONFIG_DIR $XDG_CONFIG_HOME/astal
 set SCSS_PATH $AGS_CONFIG_DIR/style/main.scss
 set CSS_PATH $AGS_CONFIG_DIR/dist/main.css
 set TF %H%M%S
 
+ags run -d $AGS_CONFIG_DIR &
 function restart-ags
-    systemctl restart --user ags.service
+    ags quit
+    ags run -d $AGS_CONFIG_DIR &
 end
 
 inotifywait --quiet --monitor --recursive $AGS_CONFIG_DIR --event create,modify,delete --format '%w %f %e %T' --timefmt $TF |
@@ -14,7 +16,7 @@ inotifywait --quiet --monitor --recursive $AGS_CONFIG_DIR --event create,modify,
         set delta (math (date +$TF) - $TIME)
         if test $delta -lt 2 -a $delta -gt -2
             switch (path extension $FILE)
-                case .js
+                case .tsx
                     restart-ags
                 case .ts
                     restart-ags
