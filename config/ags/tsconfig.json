@@ -5,8 +5,7 @@
     "lib": [
       "ES2022"
     ],
-    "allowJs": true,
-    "checkJs": true,
+    "allowJs": false,
     "strict": true,
     "noImplicitAny": false,
     "baseUrl": ".",

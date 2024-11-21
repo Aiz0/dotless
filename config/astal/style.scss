@@ -4,10 +4,10 @@ $theme_bg_color: "@theme_bg_color";
 
 window.Bar {
     background: transparent;
-    color: #{$theme_bg_color};
+    color: #{$theme_fg_color};
     font-weight: bold;
 
-    >centerbox {
+    > centerbox {
         background: #{$theme_bg_color};
         border-radius: 10px;
         margin: 8px;
