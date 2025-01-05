@@ -9,4 +9,4 @@ end
 
 # set home and launch
 set HOME $ZEN_DIR
-exec /opt/zen-browser-avx2-bin/zen-bin $argv
+exec /opt/zen-browser-bin/zen-bin $argv
