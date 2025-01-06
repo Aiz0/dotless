@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind utilities;
+* {
+    all: unset;
+}
+
+tooltip.background {
+    @apply bg-slate-900 rounded-lg text-white;
+}
+
+tooltip label {
+    @apply px-2;
+}
+
+.progress-bar trough .empty {
+    @apply bg-slate-700;
+}
+
+.progress-bar trough .filled {
+    @apply bg-pink-500;
+}

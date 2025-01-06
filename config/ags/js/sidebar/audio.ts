@@ -20,9 +20,12 @@ export const Volume = () =>
           ...self.attribute,
           selected: audio.speaker.is_muted || false,
         };
-        const vol = audio.speaker.is_muted ? 0 : audio.speaker.volume * 100;
-        const iconName =
-          options.volumeMap.find((i) => i.threshold <= vol)?.status || "";
+        const vol = audio.speaker.is_muted
+          ? 0
+          : (audio.speaker.volume ?? 0) * 100;
+        const iconName = options.volumeMap.find((i) =>
+          i.threshold <= vol
+        )?.status || "";
         self.label = icons.audio.volume[iconName];
         self.tooltip_text = `Volume ${Math.floor(vol)}%`;
       },
