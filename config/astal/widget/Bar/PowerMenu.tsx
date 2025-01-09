@@ -4,7 +4,7 @@ import IconButton from "../components/IconButton";
 export function PowerMenu() {
   return (
     <IconButton
-      onClickRelease={() => {
+      onClicked={() => {
         execAsync("wlogout");
       }}
     >

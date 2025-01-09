@@ -1,5 +1,5 @@
-import Astal from "gi://Astal?version=3.0";
-import Wp from "gi://AstalWp?version=0.1";
+import Astal from "gi://Astal";
+import Wp from "gi://AstalWp";
 import { bind } from "astal";
 import IconButton from "../components/IconButton";
 
@@ -13,15 +13,15 @@ export function Speaker() {
         (v) => `Volume ${Math.floor(v * 100)}%`,
       )}
       selected={bind(speaker, "mute")}
-      onClickRelease={(self, clickEvent) => {
-        if (clickEvent.button == 1) {
-          audio?.defaultSpeaker.set_mute(!bind(speaker, "mute").get());
-        }
+      onClicked={() => {
+
+        audio?.defaultSpeaker.set_mute(!bind(speaker, "mute").get());
+
       }}
-      onScroll={(self, scrollEvent) => {
-        if (scrollEvent.delta_y > 0) {
+      onScroll={(self, dx, dy) => {
+        if (dy > 0) {
           speaker.volume -= 0.01; // down
-        } else {
+        } else if (dy < 0) {
           speaker.volume += 0.01; //up
         }
       }}
@@ -38,15 +38,16 @@ export function Microphone() {
         (v) => `Volume ${Math.floor(v * 100)}%`,
       )}
       selected={bind(microphone, "mute")}
-      onClickRelease={(self, clickEvent) => {
-        if (clickEvent.button == Astal.MouseButton.PRIMARY) {
-          audio?.defaultMicrophone.set_mute(!bind(microphone, "mute").get());
-        }
+      onClicked={() => {
+
+        audio?.defaultMicrophone.set_mute(!bind(microphone, "mute").get());
+
       }}
-      onScroll={(self, scrollEvent) => {
-        if (scrollEvent.delta_y > 0) {
+      onScroll={(self, dx, dy) => {
+        print(dx, dy)
+        if (dy > 0) {
           microphone.volume -= 0.01; // down
-        } else {
+        } else if (dy < 0) {
           microphone.volume += 0.01; //up
         }
       }}

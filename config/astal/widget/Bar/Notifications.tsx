@@ -12,11 +12,11 @@ export function Notifications() {
         (v) => `${v.count} notification${v.count != 1 ? "s" : ""}`,
       )}
       selected={swaync((value) => value.visible)}
-      onClickRelease={(self, clickEvent) => {
-        if (clickEvent.button == 1) {
-          execAsync("swaync-client --toggle-panel");
-        } else if (clickEvent.button == 3)
+      onClicked={() => execAsync("swaync-client --toggle-panel")}
+      onButtonReleased={(self, event) => {
+        if (event.get_button() === 3) {
           execAsync("swaync-client --toggle-dnd");
+        }
       }}
       onDestroy={() => swaync.drop()}
     >

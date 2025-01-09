@@ -1,4 +1,4 @@
-import { Widget } from "astal/gtk3";
+import { Widget } from "astal/gtk4";
 import { Variable, GLib } from "astal";
 
 export default ({

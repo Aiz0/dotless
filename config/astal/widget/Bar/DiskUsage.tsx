@@ -38,7 +38,7 @@ export default () => (
         //   heightRequest = { 40}
         //   widthRequest = { 40}
         //   value = { v.percent / v.percent2 }
-        //   className = "progress-bar"
+        //   cssClasses = "progress-bar"
         // />
       )))}
     </box>

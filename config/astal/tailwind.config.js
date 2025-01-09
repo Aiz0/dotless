@@ -1,4 +1,8 @@
 /** @type {import('tailwindcss').Config} */
+import resolveConfig from "tailwindcss/resolveConfig";
+import defaultConfig from "tailwindcss/defaultConfig";
+
+const config = resolveConfig(defaultConfig);
 module.exports = {
   content: ["./widget/**/*.tsx"],
   theme: {
@@ -23,7 +27,12 @@ module.exports = {
     textOverflow: false,
     position: false,
     lineHeight: false,
-    flex: false,
-    flexGrow: false,
+    ...[
+      Object.fromEntries(
+        Object.keys(config.corePlugins)
+          .filter((k) => k.startsWith("backdrop") || k.startsWith("flex"))
+          .map((k) => [k, false]),
+      ),
+    ],
   },
 };

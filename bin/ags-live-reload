@@ -5,10 +5,10 @@ set SCSS_PATH $AGS_CONFIG_DIR/style/main.scss
 set CSS_PATH $AGS_CONFIG_DIR/dist/main.css
 set TF %H%M%S
 
-ags run -d $AGS_CONFIG_DIR &
+ags run -d $AGS_CONFIG_DIR --gtk4 &
 function restart-ags
     ags quit
-    ags run -d $AGS_CONFIG_DIR &
+    ags run -d $AGS_CONFIG_DIR  --gtk4 &
 end
 
 inotifywait --quiet --monitor --recursive $AGS_CONFIG_DIR --event create,modify,delete --format '%w %f %e %T' --timefmt $TF |

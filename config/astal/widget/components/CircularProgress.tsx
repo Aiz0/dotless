@@ -15,10 +15,10 @@ export default ({
         startAt={0.75}
         endAt={0.75} // needs to be same as above for full circle
         rounded
-        className="text-[0.25rem] text-pink-400 bg-slate-700"
+        cssClasses={["text-[0.25rem]", "text-pink-400", "bg-slate-700"]}
       >
       </circularprogress>
-      <label label={icon} className="text-2xl text-pink-400" />
+      <label label={icon} cssClasses={["text-2xl", "text-pink-400"]} />
     </overlay>
   );
 };
