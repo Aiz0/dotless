@@ -53,7 +53,7 @@ export default function Bar(gdkmonitor: Gdk.Monitor) {
       application={App}
       visible
     >
-      <centerbox orientation={1}>
+      <centerbox orientation={1} cssClasses={["py-2"]}>
         <box vertical valign={Gtk.Align.START} spacing={12}>
           <box halign={Gtk.Align.CENTER}>
             <PowerMenu />
