@@ -15,6 +15,7 @@ application/x-extension-shtml=zen-browser.desktop;
 application/xhtml+xml=zen-browser.desktop;
 application/x-extension-xhtml=zen-browser.desktop;
 application/x-extension-xht=zen-browser.desktop;
+application/x-wine-extension-ini=dev.zed.Zed.desktop;
 
 [Default Applications]
 application/json=kcr.desktop
@@ -94,3 +95,4 @@ application/x-extension-html=zen-browser.desktop
 application/x-extension-shtml=zen-browser.desktop
 application/x-extension-xhtml=zen-browser.desktop
 application/x-extension-xht=zen-browser.desktop
+application/x-wine-extension-ini=dev.zed.Zed.desktop
