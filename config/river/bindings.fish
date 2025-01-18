@@ -123,6 +123,4 @@ riverctl map normal Super Escape spawn "loginctl lock-session"
 riverctl map normal Super+Shift Escape spawn "wlogout"
 
 # Screenshot
-riverctl map normal Super D spawn "wl-screenshot.sh --optimize"
-riverctl map normal Super C spawn "wl-screenshot.sh --select=area --copy --optimize"
-riverctl map normal Super+Shift C spawn "wl-screenshot.sh --select=output --optimize"
+riverctl map normal Super D spawn "river-screenshot.fish"
