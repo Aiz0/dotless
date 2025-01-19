@@ -22,7 +22,7 @@ riverctl rule-add -app-id 'popup*' float
 
 # Keyboard repeat rate
 riverctl set-repeat 40 275
-riverctl xcursor-theme posy-black
+riverctl xcursor-theme "Posy_Cursor_Black" 32
 
 # Hide cursor after 5s
 # disabled because it causes issues with zed
