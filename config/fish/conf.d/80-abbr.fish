@@ -1,7 +1,6 @@
 if status is-interactive
     # General
     abbr -ag c   'clear'
-    abbr -ag vpn 'protonvpn-cli'
 
     # git
 
@@ -25,20 +24,4 @@ if status is-interactive
     abbr -ag dbs 'dotbare fstat'
     #abbr -ag dbc 'dotbare commit'
     abbr -ag dbp 'dotbare push'
-
-
-    # Kakoune kcr
-
-    abbr -ag k  'kcr edit'
-    abbr -ag K  'kcr-fzf-shell'
-    abbr -ag KK 'kcr-fzf-shell --working-directory .'
-    abbr -ag ks 'kcr shell --session'
-    abbr -ag kl 'kcr list'
-
-    abbr -ag :f  'kcr fzf files'
-    abbr -ag f:  'kcr-fzf-shell --working-directory . kcr fzf files'
-    abbr -ag fm: 'kcr-fzf-shell sidetree --working-directory'
-
-    abbr -ag :g 'kcr fzf grep'
-    abbr -ag g: 'kcr-fzf-shell --working-directory . kcr fzf grep'
 end
