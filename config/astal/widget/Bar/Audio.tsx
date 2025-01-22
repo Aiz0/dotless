@@ -2,6 +2,7 @@ import Astal from "gi://Astal";
 import Wp from "gi://AstalWp";
 import { bind } from "astal";
 import IconButton from "../components/IconButton";
+import { execAsync } from "astal";
 
 const audio = Wp.get_default()?.audio;
 export function Speaker() {
@@ -14,15 +15,13 @@ export function Speaker() {
       )}
       selected={bind(speaker, "mute")}
       onClicked={() => {
-
         audio?.defaultSpeaker.set_mute(!bind(speaker, "mute").get());
-
       }}
       onScroll={(self, dx, dy) => {
         if (dy > 0) {
-          speaker.volume -= 0.01; // down
+          execAsync(["swayosd-client", "--output-volume", "lower"]);
         } else if (dy < 0) {
-          speaker.volume += 0.01; //up
+          execAsync(["swayosd-client", "--output-volume", "raise"]);
         }
       }}
       child={<label label={bind(speaker, "mute").as((v) => (v ? "󰝟" : "󰕾"))} />}
@@ -39,16 +38,13 @@ export function Microphone() {
       )}
       selected={bind(microphone, "mute")}
       onClicked={() => {
-
         audio?.defaultMicrophone.set_mute(!bind(microphone, "mute").get());
-
       }}
       onScroll={(self, dx, dy) => {
-        print(dx, dy)
         if (dy > 0) {
-          microphone.volume -= 0.01; // down
+          execAsync(["swayosd-client", "--input-volume", "lower"]);
         } else if (dy < 0) {
-          microphone.volume += 0.01; //up
+          execAsync(["swayosd-client", "--input-volume", "raise"]);
         }
       }}
       child={
