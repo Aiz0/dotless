@@ -113,7 +113,7 @@ riverctl map normal Super P spawn zen-browser
 riverctl map normal Super Z spawn zeditor
 
 # Launcher
-riverctl map normal Super Space spawn "fuzzel.sh"
+riverctl map normal Super Space spawn walker
 
 
 # Lock

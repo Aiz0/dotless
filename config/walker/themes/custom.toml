@@ -1,0 +1,93 @@
+[ui.anchors]
+bottom = true
+left = true
+right = true
+top = true
+
+[ui.window]
+h_align = "fill"
+v_align = "fill"
+
+[ui.window.box]
+orientation = "vertical"
+h_align = "center"
+spacing = 0
+revert = false
+
+[ui.window.box.margins]
+top = 250
+
+[ui.window.box.bar]
+name = "bar"
+orientation = "horizontal"
+position = "start"
+h_align = "center"
+h_expand = true
+spacing = 16
+
+[ui.window.box.bar.entry]
+h_align = "start"
+h_expand = false
+
+[ui.window.box.bar.entry.icon]
+v_align = "start"
+v_expand = false
+h_expand = false
+h_align = "start"
+height = -1
+width = -1
+hide = false
+opacity = 1
+icon_size = "large"
+pixel_size = -1
+theme = ""
+
+[ui.window.box.bar.entry.icon.margins]
+bottom = 0
+start = 0
+end = 0
+top = 0
+
+[ui.window.box.bar.entry.label]
+v_align = "fill"
+v_expand = true
+y_align = 0.5
+
+[ui.window.box.bar.entry.label.margins]
+start = 4
+
+[ui.window.box.scroll]
+overlay_scrolling = true
+
+[ui.window.box.scroll.list]
+always_show = true
+width = 700
+max_width = 700
+min_width = 700
+min_height = 80
+max_height = 380
+
+[ui.window.box.scroll.list.item]
+spacing = 12
+
+[ui.window.box.scroll.list.item.activation_label]
+h_align = "end"
+h_expand = true
+justify = "right"
+x_align = 1
+
+[ui.window.box.scroll.list.item.text]
+h_align = "fill"
+h_expand = true
+revert = false
+
+[ui.window.box.scroll.list.item.text.label]
+wrap = false
+
+[ui.window.box.search.input]
+h_align = "fill"
+h_expand = true
+icons = false
+
+[ui.window.box.search.spinner]
+hide = true
