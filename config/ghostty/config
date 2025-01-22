@@ -1,0 +1,5 @@
+font-family = monospace
+font-size = 13
+gtk-single-instance = true
+theme = catppuccin-mocha
+window-padding-y = 2

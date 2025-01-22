@@ -104,8 +104,7 @@ for mode in normal locked
 end
 
 # Terminal
-set termlist $WAYLAND_TERMINAL $TERMINAL alacritty
-riverctl map normal Super Return spawn $termlist[1]
+riverctl map normal Super Return spawn $TERMINAL
 
 # Browser
 riverctl map normal Super P spawn zen-browser
