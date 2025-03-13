@@ -1,11 +1,11 @@
 [Unit]
 Description=swww daemon
 Documentation=https://github.com/Horus645/swww
-PartOf=wayland-session.target
+PartOf=graphical-session.target
+After=graphical-session.target
+Requisite=graphical-session.target
 
 [Service]
 ExecStart=swww-daemon
 ExecStop=swww kill
-
-[Install]
-WantedBy=wayland-session.target
+Restart=on-failure
